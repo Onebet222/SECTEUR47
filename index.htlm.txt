@@ -1,0 +1,3126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SECTEUR 47</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* === STYLES COMPLETS (inchangés) === */
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#0a0a0a;font-family:'Courier New',monospace;color:#c8d0c0;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:15px;background-image:linear-gradient(rgba(0,255,0,0.02)1px,transparent 1px),linear-gradient(90deg,rgba(0,255,0,0.02)1px,transparent 1px);background-size:40px 40px;position:relative}
+    body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.15)0px,rgba(0,0,0,0.15)2px,transparent 2px,transparent 4px);pointer-events:none;z-index:999}
+    #loginPage{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:rgba(10,10,10,0.95);z-index:1000;backdrop-filter:blur(8px)}
+    #loginPage.hidden{display:none}
+    .login-box{background:rgba(13,26,19,0.95);border:2px solid #39FF6A;border-radius:16px;padding:40px 45px;max-width:400px;width:90%;box-shadow:0 0 80px rgba(57,255,106,0.15);text-align:center}
+    .login-box h1{font-size:28px;letter-spacing:6px;color:#39FF6A;text-shadow:0 0 30px rgba(57,255,106,0.3);text-transform:uppercase;margin-bottom:8px}
+    .login-box .sub{font-size:12px;color:#7CFFA0;letter-spacing:4px;text-transform:uppercase;margin-bottom:25px}
+    .login-box .field{margin-bottom:16px;text-align:left}
+    .login-box .field label{display:block;color:#7CFFA0;font-size:12px;letter-spacing:2px;margin-bottom:4px}
+    .login-box .field input{width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:8px;padding:10px 14px;color:#fff;font-family:'Courier New',monospace;font-size:14px;transition:.2s}
+    .login-box .field input:focus{outline:none;border-color:#39FF6A;box-shadow:0 0 30px rgba(57,255,106,0.2)}
+    .login-box .btn-login{width:100%;padding:12px;background:#39FF6A;border:none;border-radius:8px;color:#0a0f0c;font-weight:700;font-size:16px;letter-spacing:3px;cursor:pointer;transition:.2s;margin-top:6px}
+    .login-box .btn-login:hover{background:#7CFFA0;box-shadow:0 0 40px rgba(57,255,106,0.4);transform:scale(1.02)}
+    .login-box .error{color:#FF5C5C;font-size:13px;margin-top:12px;min-height:20px}
+    .login-box .footer-text{margin-top:20px;font-size:11px;color:#8aa89a;letter-spacing:1px}
+    #dashboard{display:none;max-width:1400px;width:100%;background:rgba(10,18,14,0.92);border:2px solid #39FF6A;border-radius:16px;padding:20px 25px;box-shadow:0 0 60px rgba(57,255,106,0.15),inset 0 0 80px rgba(57,255,106,0.03);position:relative;z-index:1;backdrop-filter:blur(2px)}
+    #dashboard.show{display:block}
+    #taskbar{position:fixed;bottom:0;left:0;right:0;height:50px;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);display:none;align-items:center;padding:0 20px;color:#fff;z-index:9999;border-top:1px solid rgba(57,255,106,0.3);font-family:'Courier New',monospace}
+    #taskbar .brand{font-weight:700;color:#39FF6A;letter-spacing:2px;margin-right:20px}
+    #taskbar .user-info{margin-right:15px;color:#7CFFA0;font-size:13px}
+    #taskbar .logout-btn{background:transparent;border:1px solid rgba(255,92,92,0.4);color:#FF5C5C;padding:2px 14px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:12px;transition:.2s}
+    #taskbar .logout-btn:hover{background:rgba(255,92,92,0.15);border-color:#FF5C5C}
+    #taskbar .clock{margin-left:auto;font-size:14px;color:#7CFFA0;letter-spacing:1px;background:rgba(57,255,106,0.08);padding:3px 16px;border-radius:20px;border:1px solid rgba(57,255,106,0.15)}
+    .header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #39FF6A;padding-bottom:12px;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+    .header h1{font-size:34px;letter-spacing:8px;color:#39FF6A;text-shadow:0 0 30px rgba(57,255,106,0.4);text-transform:uppercase}
+    .header .sub{font-size:14px;letter-spacing:6px;color:#7CFFA0;font-weight:300;text-transform:uppercase}
+    .chat-widget{background:rgba(57,255,106,0.08);border:1px solid rgba(57,255,106,0.25);border-radius:30px;padding:6px 18px;color:#7CFFA0;font-family:inherit;font-size:12px;letter-spacing:0.5px;cursor:pointer;transition:0.3s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+    .chat-widget:hover{background:rgba(57,255,106,0.15);border-color:#39FF6A;color:#39FF6A;box-shadow:0 0 20px rgba(57,255,106,0.1)}
+    .chat-widget.active{background:rgba(57,255,106,0.15);border-color:#39FF6A;color:#39FF6A;box-shadow:0 0 20px rgba(57,255,106,0.15)}
+    .header-right-group{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .badge{border:1px solid #39FF6A55;padding:4px 16px;border-radius:20px;font-size:11px;color:#39FF6A;background:#39FF6A11;letter-spacing:2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .badge .logout{background:transparent;border:1px solid #FF5C5C55;color:#FF5C5C;padding:4px 12px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:11px;letter-spacing:1px}
+    .badge .logout:hover{background:#FF5C5C22;border-color:#FF5C5C}
+    .admin-dropdown{position:relative;display:inline-block}
+    .admin-dropdown .dropbtn{background:transparent;border:1px solid #FFD86B55;color:#FFD86B;padding:4px 14px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:11px;letter-spacing:1px}
+    .admin-dropdown .dropbtn:hover{background:#FFD86B22;border-color:#FFD86B}
+    .admin-dropdown .dropdown-content{display:none;position:absolute;background:#0d1a13;min-width:180px;border:1px solid #39FF6A;border-radius:8px;box-shadow:0 8px 16px rgba(0,0,0,0.8);z-index:10;top:100%;right:0}
+    .admin-dropdown .dropdown-content a{color:#c8d0c0;padding:8px 16px;text-decoration:none;display:block;font-size:13px;letter-spacing:1px;cursor:pointer;transition:.2s;border-bottom:1px solid #1a2f24}
+    .admin-dropdown .dropdown-content a:last-child{border-bottom:none}
+    .admin-dropdown .dropdown-content a:hover{background:#39FF6A22;color:#39FF6A}
+    .admin-dropdown:hover .dropdown-content{display:block}
+    .tabs{display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap;border-bottom:1px solid #1f5c3a;padding-bottom:8px}
+    .tab{padding:8px 20px;background:transparent;border:1px solid transparent;border-radius:20px;color:#8aa89a;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;letter-spacing:1px;text-transform:uppercase}
+    .tab:hover{color:#fff;border-color:#39FF6A55}
+    .tab.active{color:#39FF6A;border-color:#39FF6A;background:#39FF6A11}
+    .page{display:none}
+    .page.active{display:block}
+    .stats-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:25px}
+    .stat-card-dash{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:12px;padding:16px 18px;transition:.3s}
+    .stat-card-dash:hover{border-color:#39FF6A88;box-shadow:0 0 30px rgba(57,255,106,0.15);transform:translateY(-2px)}
+    .stat-card-dash .stat-label{font-size:11px;color:#7CFFA0;text-transform:uppercase;letter-spacing:2px}
+    .stat-card-dash .stat-number{font-size:28px;font-weight:700;color:#39FF6A;margin:4px 0 2px}
+    .stat-card-dash .stat-sub{font-size:12px;color:#8aa89a}
+    .map-container{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:12px;padding:16px 18px;margin-bottom:25px}
+    .map-container h4{color:#7CFFA0;font-size:13px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #1f5c3a;padding-bottom:8px;margin-bottom:12px}
+    .map-image{width:100%;aspect-ratio:16/9;background:#0a0a0a;border-radius:8px;position:relative;overflow:hidden;border:1px solid #1f5c3a}
+    .map-image img{width:100%;height:100%;object-fit:cover;opacity:.75}
+    .map-point{position:absolute;width:24px;height:24px;background:#FF3D3D;border-radius:50%;border:3px solid #39FF6A;box-shadow:0 0 30px rgba(57,255,106,0.9);transform:translate(-50%,-50%);cursor:pointer;transition:.2s;z-index:5}
+    .map-point:hover{transform:translate(-50%,-50%) scale(1.6)}
+    .map-point .tooltip{display:none;position:absolute;bottom:130%;left:50%;transform:translateX(-50%);background:#0d1a13;border:2px solid #39FF6A;border-radius:8px;padding:6px 14px;font-size:12px;color:#fff;white-space:nowrap;z-index:10}
+    .map-point:hover .tooltip{display:block}
+    .clickable-map-container{position:relative;width:100%;max-width:600px;margin:0 auto 10px;border:2px solid #39FF6A;border-radius:8px;overflow:hidden;cursor:crosshair}
+    .clickable-map-container img{display:block;width:100%;height:auto}
+    .clickable-map-container .map-marker{position:absolute;width:22px;height:22px;background:#FF3D3D;border:2px solid #fff;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 25px rgba(57,255,106,0.9),0 0 50px rgba(255,61,61,0.5);display:none;z-index:10}
+    .map-coords-display{text-align:center;font-size:13px;color:#8aa89a;margin-bottom:15px}
+    .map-coords-display strong{color:#39FF6A}
+    .points-admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:15px}
+    @media(max-width:700px){.points-admin-grid{grid-template-columns:1fr}}
+    .points-list{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:10px;padding:16px 18px}
+    .points-list h4{color:#7CFFA0;border-bottom:1px solid #1f5c3a;padding-bottom:8px;margin-bottom:10px}
+    .point-item{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #14251c;font-size:13px}
+    .point-item .coords{color:#8aa89a;font-size:11px}
+    .point-item .actions{display:flex;gap:6px}
+    .bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px}
+    @media(max-width:1000px){.bottom-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:700px){.bottom-grid{grid-template-columns:1fr}}
+    .top-members{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:12px;padding:16px 18px}
+    .top-members h4{color:#7CFFA0;font-size:13px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #1f5c3a;padding-bottom:8px;margin-bottom:10px}
+    .top-member-item{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #14251c}
+    .top-member-item .rank{color:#FFD86B;width:25px}
+    .top-member-item .name{font-weight:600}
+    .top-member-item .value{color:#39FF6A}
+    .next-op{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:12px;padding:16px 18px}
+    .next-op h4{color:#7CFFA0;font-size:13px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #1f5c3a;padding-bottom:8px;margin-bottom:10px}
+    .next-op .op-title{font-size:18px;font-weight:700;color:#39FF6A}
+    .next-op .op-desc{font-size:13px;color:#c8d0c0;margin:4px 0}
+    .next-op .op-meta{display:flex;gap:20px;font-size:13px;margin-top:6px;flex-wrap:wrap}
+    .next-op .op-meta span{color:#8aa89a}
+    .next-op .op-meta .value{color:#FFD86B;font-weight:600}
+    .missions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:25px;margin-bottom:30px}
+    @media(max-width:800px){.missions-grid{grid-template-columns:1fr}}
+    .mission-card{background:linear-gradient(145deg,rgba(10,20,15,0.95),rgba(5,12,8,0.98));border:2px solid rgba(57,255,106,0.25);border-radius:16px;padding:22px 24px;transition:all .3s ease;box-shadow:0 0 20px rgba(57,255,106,0.05)}
+    .mission-card:hover{border-color:#39FF6A;transform:translateY(-6px) scale(1.01);box-shadow:0 0 40px rgba(57,255,106,0.25)}
+    .mission-card .mission-title{font-size:20px;font-weight:800;letter-spacing:2px;color:#39FF6A;text-shadow:0 0 20px rgba(57,255,106,0.3);text-transform:uppercase}
+    .mission-card .mission-badge{background:rgba(255,216,107,0.12);border:1px solid #FFD86B55;color:#FFD86B;font-size:10px;font-weight:700;letter-spacing:1.5px;padding:4px 14px;border-radius:20px;text-transform:uppercase}
+    .mission-card .mission-detail-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(57,255,106,0.06);font-size:14px}
+    .mission-card .mission-detail-row .label{color:#8aa89a}
+    .mission-card .mission-detail-row .value{color:#e0e8e0;font-weight:600}
+    .mission-card .mission-detail-row .value.highlight{color:#FFD86B;font-weight:700}
+    .hierarchie-banner{background:#0a0a0a;border:1px solid #39FF6A55;border-radius:16px;padding:30px 30px 20px;margin-bottom:30px;box-shadow:0 0 60px rgba(57,255,106,0.08)}
+    .hierarchie-banner:hover{border-color:#39FF6A;box-shadow:0 0 80px rgba(57,255,106,0.15)}
+    .hierarchie-banner .banner-title{font-size:32px;font-weight:700;letter-spacing:6px;color:#FFD86B;text-shadow:0 0 40px rgba(255,216,107,0.2);text-transform:uppercase;margin-bottom:4px}
+    .hierarchie-banner .banner-subtitle{font-size:18px;font-weight:300;letter-spacing:4px;color:#7CFFA0;text-transform:uppercase;border-bottom:1px solid #1f5c3a;padding-bottom:12px;margin-bottom:16px}
+    .hierarchie-banner .banner-text p{font-size:14px;line-height:1.7;color:#c8d0c0;margin-bottom:12px;text-align:justify}
+    .hierarchie-banner .banner-text p:first-of-type{font-size:18px;font-weight:700;color:#FFD86B;text-align:center;letter-spacing:1px;margin-bottom:18px}
+    .hierarchie-banner .banner-signature{font-size:16px;font-weight:700;color:#39FF6A;text-align:center;letter-spacing:2px;margin-top:8px;padding-top:12px;border-top:1px solid #1f5c3a}
+    .hierarchie-banner .banner-meta{display:flex;justify-content:center;gap:30px;margin-top:18px;font-size:12px;color:#8aa89a;letter-spacing:1px;border-top:1px solid #1f5c3a;padding-top:14px;flex-wrap:wrap}
+    .hierarchie-banner .banner-meta span{background:#132A1E;padding:4px 14px;border-radius:20px;border:1px solid #1f5c3a}
+    .hierarchie-banner .banner-meta span:hover{border-color:#39FF6A}
+    .hierarchie-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;margin:25px 0}
+    .hierarchie-card{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:14px;padding:20px 12px;text-align:center;transition:.3s;position:relative;overflow:hidden}
+    .hierarchie-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:#39FF6A}
+    .hierarchie-card:hover{transform:translateY(-4px);border-color:#39FF6A88;box-shadow:0 8px 30px rgba(57,255,106,0.15)}
+    .hierarchie-card .card-icon{font-size:36px;margin-bottom:6px}
+    .hierarchie-card .label{font-size:11px;color:#7CFFA0;text-transform:uppercase;letter-spacing:2px;font-weight:600}
+    .hierarchie-card .value{font-size:32px;font-weight:700;color:#39FF6A;margin-top:4px}
+    .hierarchie-card .value.gold{color:#FFD86B}
+    .hierarchie-card .value.purple{color:#C79CFF}
+    .hierarchie-card .value.orange{color:#FFA53C}
+    .hierarchie-card.boss{border-color:#FFD86B55}
+    .hierarchie-card.boss::before{background:#FFD86B}
+    .hierarchie-card.bras-droit{border-color:#C79CFF55}
+    .hierarchie-card.bras-droit::before{background:#C79CFF}
+    .hierarchie-card.haut-grade{border-color:#39FF6A55}
+    .hierarchie-card.haut-grade::before{background:#39FF6A}
+    .hierarchie-card.soldat{border-color:#FFA53C55}
+    .hierarchie-card.soldat::before{background:#FFA53C}
+    .table-wrapper{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:10px;overflow-x:auto;padding:4px;margin:15px 0}
+    table{width:100%;border-collapse:collapse;font-size:12px;min-width:1000px}
+    th{background:#132A1E;color:#39FF6A;padding:8px 4px;border:1px solid #1f5c3a;text-align:center;white-space:nowrap}
+    td{padding:6px 4px;border:1px solid #1f5c3a;text-align:center;vertical-align:middle}
+    tr:nth-child(even) td{background:rgba(15,29,22,0.5)}
+    tr:nth-child(odd) td{background:rgba(20,37,28,0.5)}
+    .td-left{text-align:left;font-weight:600}
+    .td-right{text-align:right}
+    .td-observe{font-style:italic;color:#8aa89a;font-size:11px;text-align:left}
+    .online-indicator{display:inline-block;width:10px;height:10px;border-radius:50%;background:#4CAF50;box-shadow:0 0 10px #4CAF50;margin-right:6px}
+    .online-indicator.offline{background:#555;box-shadow:none}
+    .btn{background:transparent;border:1px solid #39FF6A55;color:#39FF6A;padding:4px 12px;border-radius:16px;font-size:11px;font-family:inherit;cursor:pointer;transition:.2s}
+    .btn:hover{background:#39FF6A22;border-color:#39FF6A;box-shadow:0 0 25px rgba(57,255,106,0.2)}
+    .btn-danger{border-color:#FF5C5C55;color:#FF5C5C}
+    .btn-danger:hover{background:#FF5C5C22;border-color:#FF5C5C}
+    .btn-success{background:#39FF6A;color:#0a0f0c;border:none;font-weight:700}
+    .btn-success:hover{background:#7CFFA0;box-shadow:0 0 30px rgba(57,255,106,0.3)}
+    .btn-warning{border-color:#FFA53C55;color:#FFA53C}
+    .btn-warning:hover{background:#FFA53C22;border-color:#FFA53C}
+    .admin-only{display:none}
+    .admin-mode .admin-only{display:inline-block}
+    .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:999}
+    .modal-overlay.active{display:flex}
+    .modal-box{background:#0d1a13;border:2px solid #39FF6A;border-radius:16px;padding:25px 30px;max-width:700px;width:95%;max-height:90vh;overflow-y:auto;box-shadow:0 0 60px rgba(57,255,106,0.1)}
+    .modal-box h2{color:#39FF6A;font-size:20px;border-bottom:1px solid #1f5c3a;padding-bottom:10px;margin-bottom:18px;display:flex;justify-content:space-between}
+    .modal-box h2 .close-btn{background:none;border:none;color:#FF5C5C;font-size:24px;cursor:pointer}
+    .modal-field{display:grid;grid-template-columns:130px 1fr;gap:8px;margin-bottom:10px;align-items:center}
+    .modal-field label{color:#7CFFA0;font-size:12px;font-weight:600}
+    .modal-field input,.modal-field textarea,.modal-field select{background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:6px 10px;color:#fff;font-family:inherit;font-size:13px;width:100%}
+    .modal-field input:focus,.modal-field textarea:focus{outline:none;border-color:#39FF6A}
+    .modal-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px;border-top:1px solid #1f5c3a;padding-top:16px}
+    .quote{text-align:center;font-size:22px;font-weight:700;letter-spacing:4px;color:#39FF6A;padding:18px 0 8px;border-top:1px solid #1f5c3a;margin-top:18px;text-transform:uppercase}
+    .quote span{color:#8aa89a;font-weight:300}
+    .last-update{text-align:right;font-size:11px;color:#8aa89a;letter-spacing:1px;margin-bottom:10px}
+    .last-update span{color:#39FF6A}
+    .vehicule-image{width:60px;height:40px;object-fit:cover;border-radius:6px;border:1px solid #1f5c3a}
+    .vehicule-image:hover{border-color:#39FF6A;box-shadow:0 0 20px rgba(57,255,106,0.1)}
+    .vehicule-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin:15px 0}
+    .vehicule-stat-card{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:10px;padding:12px 10px;text-align:center}
+    .vehicule-stat-card:hover{border-color:#39FF6A88}
+    .vehicule-stat-card .label{font-size:10px;color:#7CFFA0;text-transform:uppercase;letter-spacing:1px}
+    .vehicule-stat-card .value{font-size:22px;font-weight:700;color:#39FF6A;margin-top:4px}
+    .drogue-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;margin-top:15px}
+    .drogue-card{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:12px;padding:16px 18px;transition:.3s}
+    .drogue-card:hover{border-color:#39FF6A88;transform:translateY(-2px)}
+    .drogue-card .drogue-titre{font-size:18px;font-weight:700;color:#39FF6A}
+    .drogue-card .drogue-lieu{font-size:12px;color:#8aa89a}
+    .drogue-card .drogue-prix{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #14251c}
+    .drogue-card .drogue-prix .label{color:#8aa89a}
+    .drogue-card .drogue-prix .value{font-weight:600;color:#FFD86B}
+    #contactsGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-top:10px}
+    .contact-card{background:rgba(15,29,22,0.92);border:1px solid #1f5c3a;border-radius:14px;padding:20px 22px;transition:.3s;position:relative;overflow:hidden}
+    .contact-card:hover{border-color:#39FF6A88;transform:translateY(-4px)}
+    .contact-card .contact-type{position:absolute;top:12px;right:12px;font-size:10px;text-transform:uppercase;letter-spacing:1px;background:#132A1E;padding:2px 12px;border-radius:20px;border:1px solid #39FF6A55;color:#7CFFA0}
+    .contact-card .contact-name{font-size:20px;font-weight:700;color:#39FF6A;letter-spacing:1px;margin-bottom:8px;padding-right:80px}
+    .contact-card .contact-detail{display:flex;align-items:center;gap:10px;font-size:14px;color:#c8d0c0;padding:4px 0;border-bottom:1px solid #14251c}
+    .contact-card .contact-detail:last-child{border-bottom:none}
+    .contact-card .contact-detail .icon{color:#7CFFA0;width:24px;text-align:center}
+    .contact-card .contact-detail .value{font-weight:600;color:#fff}
+    .contact-card .contact-actions{margin-top:14px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid #1f5c3a;padding-top:12px}
+    .widget-calc{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:12px;padding:16px 18px;margin-bottom:25px}
+    .widget-calc .calc-row{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:8px}
+    .widget-calc .calc-row input[type="number"]{background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:6px 10px;color:#fff;font-family:inherit;font-size:14px;width:120px}
+    .widget-calc .calc-row input[type="number"]:focus{border-color:#39FF6A}
+    .widget-calc .calc-row input[type="checkbox"]{width:20px;height:20px;accent-color:#39FF6A}
+    .widget-calc .calc-row label{color:#7CFFA0;font-size:13px;letter-spacing:1px}
+    .widget-calc .calc-result{font-size:24px;font-weight:700;color:#FFD86B;margin-top:6px}
+    #chatMessages{background:rgba(0,0,0,0.3);border:1px solid rgba(57,255,106,0.15);border-radius:16px;padding:16px;height:400px;overflow-y:auto;margin-bottom:14px;display:flex;flex-direction:column;gap:8px}
+    #chatMessages .message{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:8px 14px;max-width:80%;align-self:flex-start;border-left:3px solid #555;animation:messageIn 0.3s ease}
+    #chatMessages .message.self{align-self:flex-end;background:rgba(57,255,106,0.08);border-left-color:#39FF6A;border-color:rgba(57,255,106,0.15)}
+    #chatMessages .message .msg-header{display:flex;gap:12px;align-items:baseline;font-size:12px;color:#8aa89a;margin-bottom:2px}
+    #chatMessages .message .msg-header .name{font-weight:700;color:#7CFFA0}
+    #chatMessages .message .msg-header .name.admin{color:#FFD86B}
+    #chatMessages .message .msg-content{color:#fff;word-wrap:break-word;font-size:14px}
+    @keyframes messageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    #chatInput{flex:1;background:#0f1d16;border:1px solid #1f5c3a;border-radius:14px;padding:12px 18px;color:#fff;font-family:inherit;font-size:14px}
+    #chatInput:focus{outline:none;border-color:#39FF6A;box-shadow:0 0 20px rgba(57,255,106,0.05)}
+    .chat-input-row{display:flex;gap:12px}
+    #toast{position:fixed;top:20px;right:20px;background:rgba(13,26,19,0.95);border:2px solid #39FF6A;border-radius:12px;padding:14px 24px;box-shadow:0 0 40px rgba(57,255,106,0.2),0 0 80px rgba(57,255,106,0.05);color:#c8d0c0;font-size:14px;z-index:3000;transform:translateX(120%);transition:transform .5s ease,box-shadow .3s;max-width:400px;backdrop-filter:blur(4px)}
+    #toast.show{transform:translateX(0)}
+    #toast:hover{box-shadow:0 0 60px rgba(57,255,106,0.3)}
+    #toast .toast-title{color:#39FF6A;font-weight:700;margin-bottom:4px;font-size:16px;letter-spacing:2px}
+    #toast .toast-title span{color:#FFD86B}
+    #toast .toast-close{position:absolute;top:8px;right:12px;background:none;border:none;color:#8aa89a;font-size:18px;cursor:pointer;transition:.2s}
+    #toast .toast-close:hover{color:#FF5C5C;text-shadow:0 0 20px #FF5C5C}
+    #bossToast{position:fixed;top:20px;left:20px;z-index:3000;background:rgba(13,26,19,0.95);border:2px solid #FF5C5C;border-radius:12px;padding:14px 24px;box-shadow:0 0 40px rgba(255,92,92,0.2);color:#c8d0c0;font-size:14px;max-width:400px;backdrop-filter:blur(4px);transform:translateX(-150%);transition:transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)}
+    #bossToast .boss-toast-header{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+    #bossToast .boss-toast-header span{font-size:24px}
+    #bossToast .boss-toast-header .title{color:#FF5C5C;font-weight:700;font-size:16px}
+    #bossToastMsg{font-size:14px;line-height:1.4}
+    #loadingOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,10,10,0.92);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:2000;backdrop-filter:blur(6px);animation:pulseBg 2s ease-in-out infinite}
+    @keyframes pulseBg{0%,100%{background:rgba(10,10,10,0.92)}50%{background:rgba(10,18,14,0.95)}}
+    #loadingOverlay.active{display:flex}
+    #loadingOverlay .spinner{width:60px;height:60px;border:4px solid #1f5c3a;border-top:4px solid #39FF6A;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:25px;box-shadow:0 0 40px rgba(57,255,106,0.2)}
+    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360)}}
+    #loadingOverlay .status{font-size:14px;color:#8aa89a;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;animation:blink 1.2s step-end infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+    #loadingOverlay .welcome{font-size:28px;font-weight:700;letter-spacing:4px;color:#39FF6A;text-shadow:0 0 30px rgba(57,255,106,0.4);text-transform:uppercase}
+    #loadingOverlay .welcome span{color:#FFD86B;text-shadow:0 0 30px rgba(255,216,107,0.3)}
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,0.3);border-radius:10px}
+    ::-webkit-scrollbar-thumb{background:#39FF6A55;border-radius:10px}
+    ::-webkit-scrollbar-thumb:hover{background:#39FF6A}
+    @media(max-width:700px){.modal-field{grid-template-columns:1fr}.header h1{font-size:22px;letter-spacing:4px}.hierarchie-grid{grid-template-columns:repeat(2,1fr)}.login-box{padding:30px 20px}.stats-cards{grid-template-columns:repeat(2,1fr)}.bottom-grid{grid-template-columns:1fr}.points-admin-grid{grid-template-columns:1fr}}
+    .admin-form{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:12px;padding:20px 24px;margin-bottom:25px}
+    .admin-form h4{color:#7CFFA0;font-size:14px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #1f5c3a;padding-bottom:8px;margin-bottom:16px}
+    .admin-form .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .admin-form .form-row.one-col{grid-template-columns:1fr}
+    .admin-form .form-group{display:flex;flex-direction:column;gap:4px}
+    .admin-form .form-group label{font-size:11px;color:#7CFFA0;letter-spacing:1px;text-transform:uppercase}
+    .admin-form .form-group input,.admin-form .form-group textarea,.admin-form .form-group select{background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:6px 10px;color:#fff;font-family:inherit;font-size:13px;width:100%}
+    .admin-form .form-group input:focus,.admin-form .form-group textarea:focus{outline:none;border-color:#39FF6A}
+    .admin-form .form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:10px;border-top:1px solid #1f5c3a;padding-top:12px}
+    .admin-list{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:12px;padding:16px 18px;margin-top:10px}
+    .admin-list .list-item{display:flex;justify-content:space-between;align-items:center;padding:8px 4px;border-bottom:1px solid #14251c;font-size:13px}
+    .admin-list .list-item:last-child{border-bottom:none}
+    .admin-list .list-item .item-info{display:flex;gap:15px;flex-wrap:wrap;align-items:center}
+    .admin-list .list-item .item-actions{display:flex;gap:6px}
+    .admin-list .list-item .item-actions .btn{font-size:10px;padding:2px 8px}
+    .btn-loc{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:12px;padding:12px 10px;cursor:pointer;transition:0.2s;text-align:center;color:#c8d0c0;font-family:inherit;width:100%;display:flex;flex-direction:column;align-items:center}
+    .btn-loc:hover{border-color:#39FF6A88;transform:translateY(-4px);box-shadow:0 0 30px rgba(57,255,106,0.15)}
+    .btn-loc img{width:70px;height:70px;object-fit:cover;border-radius:8px;margin-bottom:6px}
+    .btn-loc .loc-label{font-size:13px;font-weight:600;color:#39FF6A}
+    #locImageContainer{background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:12px;padding:20px;text-align:center;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    #locImageDisplay{max-width:100%;max-height:80vh;border-radius:8px;border:1px solid #1f5c3a;display:none;object-fit:contain}
+  </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="status">Connexion au serveur...</div>
+  <div class="welcome">Bienvenue <span id="loadingPseudo">...</span></div>
+</div>
+
+<!-- TOAST CONNEXION -->
+<div id="toast">
+  <button class="toast-close" onclick="fermerToast()">&times;</button>
+  <div class="toast-title">🔔 <span id="toastPseudo">Utilisateur</span> vient de se connecter</div>
+  <div id="toastMsg">Bienvenue dans le Secteur 47</div>
+</div>
+
+<!-- TOAST NOTIFICATION BOSS -->
+<div id="bossToast">
+  <div class="boss-toast-header">
+    <span>🚨</span>
+    <span class="title">URGENCE DU BOSS</span>
+  </div>
+  <div id="bossToastMsg">Message...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <div class="login-box">
+    <h1>SECTEUR 47</h1>
+    <div class="sub">ACTIVITIES &amp; OPERATIONS</div>
+    <form id="loginForm">
+      <div class="field"><label>👤 Pseudo</label><input type="text" id="loginPseudo" placeholder="Votre pseudo" required></div>
+      <div class="field"><label>🔑 Mot de passe</label><input type="password" id="loginMdp" placeholder="Mot de passe" required></div>
+      <button type="submit" class="btn-login">Se connecter</button>
+      <div id="loginError" class="error"></div>
+    </form>
+    <div class="footer-text">🔒 Accès réservé aux membres du Secteur 47</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h1>SECTEUR 47</h1>
+      <div class="sub">ACTIVITIES &amp; OPERATIONS</div>
+    </div>
+    <div class="header-right-group">
+      <button class="chat-widget" onclick="ouvrirChat()" id="chatWidgetBtn">💬 Discussion Crypté</button>
+      <div class="badge">
+        <div class="admin-dropdown" id="adminDropdown" style="display:none;">
+          <button class="dropbtn">🛡️ Admin</button>
+          <div class="dropdown-content">
+            <a data-page="ajout">➕ Ajouter membre</a>
+            <a data-page="points">🗺️ Points GPS</a>
+            <a data-page="missions">🌿 Missions</a>
+            <a data-page="rdv">📅 RDV</a>
+            <a data-page="drogues">💊 Drogues (admin)</a>
+            <a data-page="contacts">📇 Contacts</a>
+            <a data-page="vehicules">🚗 Véhicules</a>
+            <a data-page="historique">📜 Historique</a>
+            <a data-page="semaines">📅 Semaines Précédentes</a>
+            <a data-page="braquage">🔫 Braquage</a>
+            <a data-page="ventes">📊 Ventes</a>
+            <a id="adminNotifBtn" style="color:#FFD86B;">🔔 Notif</a>
+          </div>
+        </div>
+        🔒 <span id="userPseudoDisplay">Utilisateur</span>
+        <button class="logout" onclick="deconnexion()">⏻ Déconnexion</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="last-update">📅 Dernière mise à jour : <span id="lastUpdateDisplay">—</span></div>
+
+  <div class="tabs">
+    <button class="tab active" data-page="hierarchie">🏛️ Hiérarchie</button>
+    <button class="tab" data-page="dashboard">📋 Dashboard</button>
+    <button class="tab" data-page="membres">👥 Membres</button>
+    <button class="tab" data-page="contacts">📇 Contacts</button>
+    <button class="tab" data-page="drogues-list">💊 Drogues</button>
+    <button class="tab" data-page="plantation">🌿 Plantation</button>
+    <button class="tab" data-page="vehicules">🚗 Véhicules</button>
+    <button class="tab" data-page="loc">📌 LOC</button>
+  </div>
+
+  <!-- PAGE HIERARCHIE -->
+  <div id="page-hierarchie" class="page active">
+    <div class="hierarchie-banner">
+      <div class="banner-title">⚡ L'Électron Libre</div>
+      <div class="banner-subtitle">La Naissance du Secteur 47</div>
+      <div class="banner-text">
+        <p>On ne naît pas au sommet, on y monte en marchant sur les débris.</p>
+        <p>Né à Eindhoven dans le béton froid des quartiers nord, la rue m'a appris deux choses très tôt : personne ne te donne rien, et le silence vaut plus que l'or. J'ai commencé en bas, à enchaîner les coups d'éclat, les braquages, les poursuites. J'avais la dalle, l'ambition et aucune limite.</p>
+        <p>À 17 ans, le système a voulu me briser. Verdict : cinq ans derrière les barreaux. Mais la prison n'a pas été une peine, ça a été mon école de guerre. Pendant cinq piges, j'ai vu des caids tomber à cause d'associés bavards, d'egos surdimensionnés et d'organisations bordéliques. J'y ai appris la patience, le calcul et la méfiance absolue.</p>
+        <p>À 22 ans, je suis ressorti les mains vides, sans famille, sans réseau, mais avec une vision claire. J'ai tout quitté, changé de territoire et posé la première pierre de mon empire.</p>
+        <p>C'est là qu'est né le Secteur 47. Pas un gang de quartier, mais une véritable pieuvre criminelle, gérée comme une armée de l'ombre depuis mon réseau crypté. Ici, il n'y a pas de place pour le hasard. J'occupe le sommet de cette pyramide en tant que Boss, et chaque membre sous mes ordres répond à une discipline de fer.</p>
+        <p class="banner-signature">Bienvenue dans le Secteur 47. Mon domaine, mes règles.</p>
+      </div>
+      <div class="banner-meta">
+        <span>📅 Création : 2024</span>
+        <span>📍 Quartier Général : Crypté</span>
+        <span>👑 Boss : Hichem</span>
+      </div>
+    </div>
+    <div class="hierarchie-grid" id="hierarchieGrid"></div>
+    <div style="background:rgba(15,29,22,0.5);border:1px solid #1f5c3a;border-radius:10px;padding:15px;margin-top:10px;">
+      <h4 style="color:#7CFFA0;margin-bottom:8px;">📋 DÉTAIL DES MEMBRES</h4>
+      <div id="hierarchieDetail" style="font-size:13px;color:#d0d8d0;padding:8px 0;"></div>
+    </div>
+  </div>
+
+  <!-- PAGE DASHBOARD -->
+  <div id="page-dashboard" class="page">
+    <div class="stats-cards" id="dashStats"></div>
+
+    <div id="dernierBraquageWidget" style="background:rgba(15,29,22,0.9);border:1px solid #FFD86B55;border-radius:12px;padding:16px 18px;margin-bottom:25px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <h4 style="color:#FFD86B;letter-spacing:2px;margin:0;">🔫 DERNIER BRAQUAGE</h4>
+        <button class="btn btn-danger admin-only" onclick="resetBraquages()" style="font-size:11px;padding:4px 14px;">🔄 Reset Braquages</button>
+      </div>
+      <div id="dernierBraquageContenu" style="font-size:14px;color:#c8d0c0;margin-top:6px;">
+        <span style="color:#8aa89a;">Aucun braquage enregistré.</span>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:25px;">
+      <div class="stat-card-dash" style="border-color:#FFD86B55;">
+        <div class="stat-label">💰 COFFRE SECTEUR47</div>
+        <div class="stat-number" id="coffreDisplay">0 $</div>
+        <div class="stat-sub">Total des quotas des membres</div>
+        <button class="btn btn-warning admin-only" onclick="ouvrirModalModifCoffre()" style="margin-top:10px;">✏️ Modifier le Coffre</button>
+      </div>
+      <div class="stat-card-dash" style="border-color:#C79CFF55;">
+        <div class="stat-label">🎯 OBJECTIFS</div>
+        <div class="stat-number" id="objectifTotalDisplay">0 $</div>
+        <div class="stat-sub">Total des objectifs</div>
+        <button class="btn btn-success admin-only" onclick="ouvrirModalObjectifs()" style="margin-top:10px;">✏️ Gérer</button>
+        <div id="objectifsList" style="font-size:12px;color:#8aa89a;margin-top:6px;"></div>
+      </div>
+    </div>
+
+    <div class="widget-calc">
+      <div style="color:#7CFFA0;font-size:14px;letter-spacing:2px;text-transform:uppercase;">🧮 Calculateur +/- 30%</div>
+      <div class="calc-row">
+        <span style="color:#8aa89a;">Montant :</span>
+        <input type="number" id="calcInput" value="1000" step="100">
+        <label><input type="checkbox" id="calcMode"> Ajouter 30%</label>
+        <span style="color:#8aa89a;">Résultat :</span>
+        <span class="calc-result" id="calcResult">1 300 $</span>
+      </div>
+    </div>
+
+    <div class="widget-calc" id="widgetDepenses" style="border-color:#FFD86B55; margin-bottom:25px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
+        <div>
+          <div style="color:#7CFFA0;font-size:14px;letter-spacing:2px;text-transform:uppercase;">📋 DERNIÈRES DÉPENSES</div>
+          <div style="font-size:12px;color:#8aa89a;margin-top:4px;">Les finances du Secteur 47</div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-warning admin-only" onclick="ouvrirHistoriqueDepenses()" style="font-size:11px;padding:4px 12px;">📜 Historique</button>
+          <button class="btn btn-success admin-only" onclick="ouvrirModalAjoutDepense()" style="font-size:12px;padding:6px 16px;">➕ Ajouter</button>
+        </div>
+      </div>
+      <div id="depensesList" style="font-size:14px;color:#c8d0c0;min-height:40px;padding:5px;">
+        <div style="color:#8aa89a;text-align:center;">Chargement des dépenses...</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(15,29,22,0.9);border:1px solid #39FF6A55;border-radius:12px;padding:10px 18px;margin-bottom:25px;flex-wrap:wrap;gap:10px;" class="admin-only">
+      <span style="color:#7CFFA0;font-weight:600;letter-spacing:1px;">🌿 GESTION DES MISSIONS</span>
+      <button class="btn" id="toggleMissionBtn" onclick="toggleMissions()" style="font-size:12px;padding:4px 16px;">Chargement...</button>
+    </div>
+
+    <div class="map-container">
+      <h4>🗺️ CARTE DES OPÉRATIONS</h4>
+      <div class="map-image" id="mapContainer">
+        <img src="https://i.imgur.com/lsJkEJZ.png" alt="Carte GTA Secteur 47">
+      </div>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="next-op"><h4>🎯 PROCHAINE RÉUNION GROUPE</h4><div id="nextOperation"></div></div>
+      <div class="top-members" style="border-color:#C79CFF55;"><h4>📊 STATUTS DES MEMBRES</h4><div id="statutsSummary" style="font-size:13px;color:#c8d0c0;"></div></div>
+      <div class="top-members"><h4>🌿 MISSIONS ACTIVES</h4><div id="missionsDashPreview" style="font-size:13px;color:#c8d0c0;">Chargement...</div></div>
+    </div>
+
+    <div class="missions-grid" id="missionsGrid" style="margin-top:20px;"></div>
+    <div class="quote">« ON NE DEMANDE PAS. <span>ON PREND.</span> »</div>
+  </div>
+
+  <!-- PAGE MEMBRES -->
+  <div id="page-membres" class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
+      <h3 style="color:#39FF6A;">👥 Membres du Secteur</h3>
+      <div>
+        <button class="btn btn-success admin-only" onclick="enregistrerQuotasEtRafraichir()">📝 Enregistrer les quotas</button>
+        <button class="btn btn-warning admin-only" onclick="resetMembresStats()">🔄 Réinitialiser les stats</button>
+        <button class="btn btn-danger admin-only" onclick="resetStatuts()">🔄 Réinitialiser les statuts</button>
+      </div>
+    </div>
+    <div class="admin-only">
+      <h4 style="color:#C79CFF; margin:15px 0 10px;">🛡️ TABLEAU ADMIN</h4>
+      <div class="table-wrapper">
+        <table id="membresTableAdmin">
+          <thead>
+            <tr>
+              <th>👤 NOM</th>
+              <th>🎖️ GRADE</th>
+              <th>🌿 DROGUE</th>
+              <th>🧪 LABO</th>
+              <th>🔫 BRAQ</th>
+              <th>🎁 PRIME</th>
+              <th>📊 QUOTA</th>
+              <th>💵 PAYER</th>
+              <th>📝 OBS</th>
+              <th>📊 STATUT</th>
+              <th>🟢 STATUT</th>
+            </tr>
+          </thead>
+          <tbody id="tableBodyAdmin"></tbody>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <h4 style="color:#7CFFA0; margin:0 0 10px;">📊 ÉTAT DES MEMBRES</h4>
+      <div class="table-wrapper">
+        <table id="membresTableMembres">
+          <thead>
+            <tr>
+              <th>👤 NOM</th>
+              <th>🎖️ GRADE</th>
+              <th>🌿 DROGUE</th>
+              <th>🧪 LABO</th>
+              <th>🔫 BRAQ</th>
+              <th>🎁 PRIME</th>
+              <th>📊 QUOTA</th>
+              <th>📝 OBS</th>
+              <th>📊 STATUT</th>
+              <th>🟢 STATUT</th>
+              <th>✏️</th>
+              <th>🗑️</th>
+            </tr>
+          </thead>
+          <tbody id="tableBodyMembres"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="top-members" style="margin-top:25px; border-color:#FFD86B55;">
+      <h4 style="color:#FFD86B; letter-spacing:2px;">🏆 TOP MEMBRES</h4>
+      <div id="topMembersList" style="font-size:14px;"></div>
+    </div>
+  </div>
+
+  <!-- PAGE CONTACTS -->
+  <div id="page-contacts" class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+      <h3 style="color:#39FF6A;letter-spacing:3px;text-transform:uppercase;font-size:20px;">📇 Contacts</h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <select id="contactFilter" onchange="chargerContacts()" style="background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:6px 10px;color:#fff;font-family:inherit;">
+          <option value="all">Tous</option>
+          <option value="👑 Boss">👑 Boss</option>
+          <option value="🥈 Bras droit">🥈 Bras droit</option>
+          <option value="🎖️ Haut Grade">🎖️ Haut Grade</option>
+          <option value="⚔️ Soldat">⚔️ Soldat</option>
+          <option value="Fournisseur">Fournisseur</option>
+          <option value="Associé">Associé</option>
+        </select>
+        <button class="btn btn-success admin-only" onclick="ouvrirModalAjoutContact()">➕ Ajouter un contact</button>
+      </div>
+    </div>
+    <div id="contactsGrid"></div>
+  </div>
+
+  <!-- PAGE DROGUES (user) -->
+  <div id="page-drogues-list" class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:15px;">
+      <div>
+        <h3 style="color:#39FF6A;letter-spacing:3px;text-transform:uppercase;font-size:20px;">💊 DROGUES</h3>
+        <div style="font-size:12px;color:#8aa89a;">Liste des produits et leurs stocks</div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn" onclick="alert('📁 Dossier Contart (Factice) - Fonctionnalité à venir.')" style="border-color:#C79CFF55;color:#C79CFF;">📂 Contart</button>
+        <button class="btn btn-success" onclick="ouvrirTicketVente()" style="font-size:12px;padding:8px 20px;">🧾 Vendre de la drogue</button>
+      </div>
+    </div>
+
+    <!-- Alerte quota -->
+    <div style="background:#FFA53C11;border:1px solid #FFA53C55;border-radius:8px;padding:10px 15px;margin-bottom:15px;color:#FFA53C;font-size:14px;font-weight:600;">
+      📌 Quota minimum requis : <strong>50 000 $</strong>
+    </div>
+
+    <!-- Widget STOCK DROGUE (avec "pochons") -->
+    <div class="stats-cards" id="dashStock"></div>
+
+    <!-- Bouton rechargement stock -->
+    <div id="rechargeStockBtn" style="display:none; margin-bottom:15px;">
+      <button class="btn btn-success" onclick="ouvrirRechargeStock()">📦 Recharger le stock</button>
+    </div>
+
+    <!-- Widget stock actuel (webhook) -->
+    <div class="widget-calc" style="border-color:#C79CFF55; margin-bottom:20px;">
+      <div style="color:#7CFFA0;font-size:14px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #1f5c3a;padding-bottom:8px;margin-bottom:10px;">
+        💊 STOCK DROGUES
+      </div>
+      <div id="webhook-drogue" style="font-size:14px;display:grid;gap:6px;">
+        <div style="color:#FFA53C;font-weight:600;">⚠️ Les stocks drogues doivent être approvisionnés avant l'épuisement intégral des pochons.</div>
+      </div>
+    </div>
+
+    <!-- GRAPHIQUE PURIFICATION 50/70/90/99 -->
+    <div class="widget-calc" style="border-color:#FFD86B55; margin-top:20px;">
+      <div style="color:#FFD86B;font-size:14px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #1f5c3a;padding-bottom:8px;margin-bottom:10px;">
+        📊 STATISTIQUES DE PURIFICATION
+      </div>
+      <div style="font-size:13px;color:#8aa89a;margin-bottom:12px;">
+        Répartition des ventes par taux de purification (50%, 70%, 90%, 99%).
+      </div>
+      <div id="tauxChart" style="display:flex;justify-content:space-around;align-items:flex-end;height:120px;gap:8px;margin:10px 0;padding:0 5px;"></div>
+      <div style="display:flex;justify-content:space-around;font-size:9px;color:#8aa89a;margin-bottom:10px;">
+        <span>50%</span><span>70%</span><span>90%</span><span>99%</span>
+      </div>
+      <div style="max-height:200px;overflow-y:auto;margin-top:8px;">
+        <table style="width:100%;font-size:11px;min-width:auto;">
+          <thead>
+            <tr><th>Date</th><th>Vendeur</th><th>Type</th><th>Qté</th><th>Montant</th><th>Taux</th></tr>
+          </thead>
+          <tbody id="ventesTableBody">
+            <tr><td colspan="6" style="text-align:center;color:#8aa89a;">Chargement...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Grille des drogues -->
+    <div id="droguesGrid" class="drogue-grid"></div>
+  </div>
+
+  <!-- PAGE PLANTATION -->
+  <div id="page-plantation" class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:15px;">
+      <div>
+        <h3 style="color:#C79CFF;letter-spacing:3px;text-transform:uppercase;font-size:20px;">🌿 PLANTATION</h3>
+        <div style="font-size:12px;color:#8aa89a;">Suivi de la production et des stocks</div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn" onclick="alert('📁 Dossier Contart (Factice) - Fonctionnalité à venir.')" style="border-color:#C79CFF55;color:#C79CFF;">📂 Contart</button>
+        <button class="btn" onclick="toggleGuide()" style="border-color:#39FF6A55;color:#39FF6A;">📖 Guide</button>
+        <button class="btn btn-success" onclick="ouvrirLabo()" style="font-size:12px;padding:8px 20px;background:#C79CFF;color:#0a0f0c;">🧪 Déclarer une récolte</button>
+        <button class="btn btn-success" onclick="ouvrirVenteBranche()" style="font-size:12px;padding:8px 20px;background:#FFA53C;color:#0a0f0c;">💸 Vendre des branches</button>
+      </div>
+    </div>
+    <div style="background:#C79CFF11;border:1px solid #C79CFF55;border-radius:8px;padding:10px 15px;margin-bottom:15px;color:#C79CFF;font-size:14px;font-weight:600;">
+      📌 Quota minimum requis : <strong>3 RUN</strong>
+    </div>
+
+    <!-- WIDGET STOCK BRANCHES -->
+    <div class="stats-cards" style="margin-bottom:15px;">
+      <div class="stat-card-dash" style="border-color:#C79CFF55;">
+        <div class="stat-label">🌿 STOCK BRANCHES</div>
+        <div class="stat-number" id="stockBranchesDisplay">0</div>
+        <div class="stat-sub">Total des branches en stock (webhook)</div>
+      </div>
+    </div>
+
+    <div class="widget-calc" style="border-color:#FFA53C55; margin-bottom:20px; cursor:pointer;" onclick="toggleGuide();">
+      <div style="color:#FFA53C;font-size:14px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #1f5c3a;padding-bottom:8px;margin-bottom:10px;">
+        ⚠️ ALERTE STOCK
+      </div>
+      <div style="padding:10px 0; display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px; border-bottom:1px solid #1f5c3a; padding-bottom:12px; margin-bottom:12px;">
+        <span>🌱 Graine</span><span style="color:#FFD86B;">75 $ / unité</span>
+        <span>🪴 Pot</span><span style="color:#FFD86B;">75 $ / unité</span>
+        <span>💧 Bouteille d'eau</span><span style="color:#FFD86B;">10 $ / unité</span>
+        <span>🧪 Fertilissant (taxe)</span><span style="color:#FF5C5C;">20 000 $</span>
+        <span>🧹 SAL (propre)</span><span style="color:#39FF6A;">15 000 $</span>
+      </div>
+      <div style="font-size:16px;font-weight:600;color:#FFA53C;text-align:center;padding:15px;">
+        Les stocks doivent être approvisionnés avant épuisement intégral des produits et branches.<br>
+        <span style="font-size:13px;color:#8aa89a;">Cliquez ici pour voir le guide</span>
+      </div>
+    </div>
+
+    <div class="widget-calc" style="border-color:#FFD86B55; margin-bottom:20px;">
+      <div style="color:#FFD86B;font-size:14px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #1f5c3a;padding-bottom:8px;margin-bottom:10px;">
+        🌿 BRANCHE WEED – PRIX
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; text-align:center; padding:10px 0;">
+        <div>
+          <div style="font-size:11px;color:#8aa89a;">💰 Achat</div>
+          <div style="font-size:22px;font-weight:700;color:#FFA53C;">0 $</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#8aa89a;">📈 Revente</div>
+          <div style="font-size:22px;font-weight:700;color:#39FF6A;">55 $</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#8aa89a;">📊 Bénéfice</div>
+          <div style="font-size:22px;font-weight:700;color:#FFD86B;">+55 $</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#8aa89a;border-top:1px solid #1f5c3a;padding-top:8px;text-align:center;">
+        ⚡ Ces prix sont fixes et définis par l'administration.
+      </div>
+    </div>
+
+    <div id="guideSection" style="background:#0a0a0a; border:1px solid #C79CFF55; border-radius:12px; padding:15px; margin-bottom:20px; text-align:center; display:none;">
+      <h4 style="color:#C79CFF; margin-bottom:8px;">📖 GUIDE DE DÉMARRAGE</h4>
+      <img src="https://i.imgur.com/KyJsEoP.png" alt="Guide de démarrage" style="max-width:100%; border-radius:8px; border:1px solid #1f5c3a;">
+      <div style="margin-top:8px; font-size:11px; color:#8aa89a;">Image explicative pour les membres</div>
+    </div>
+  </div>
+
+  <!-- PAGE VEHICULES -->
+  <div id="page-vehicules" class="page">
+    <div class="vehicule-stats" id="vehiculeStats"></div>
+    <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+      <button class="btn btn-success admin-only" onclick="ouvrirAjoutVehicule()">➕ Ajouter un véhicule</button>
+    </div>
+    <div class="table-wrapper">
+      <table id="vehiculesTable">
+        <thead><tr><th>📷 PHOTO</th><th>🚗 NOM</th><th>📦 COFFRE (KG)</th><th>🎯 UTILISATION</th><th>🔢 PLAQUE</th><th>✏️</th><th>🗑️</th></tr></thead>
+        <tbody id="vehiculesBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAGE CHAT -->
+  <div id="page-chat" class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+      <h3 style="color:#39FF6A;letter-spacing:3px;text-transform:uppercase;font-size:20px;">💬 Salon du Secteur</h3>
+      <span style="font-size:12px;color:#8aa89a;">🟢 En temps réel</span>
+    </div>
+    <div id="chatMessages">
+      <div style="text-align:center;color:#555;font-size:13px;margin:auto;">Clique sur "Discussion Crypté" pour charger</div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Écris ton message..." disabled>
+      <button id="chatSendBtn" class="btn btn-success" disabled>Envoyer</button>
+    </div>
+    <div style="margin-top:8px;font-size:11px;color:#8aa89a;text-align:right;">🔒 Messages via Supabase</div>
+  </div>
+
+  <!-- PAGES ADMIN -->
+  <div id="page-historique" class="page">
+    <h3 style="color:#39FF6A;margin-bottom:16px;">📜 HISTORIQUE DES TRANSACTIONS</h3>
+    <div class="admin-form">
+      <div class="table-wrapper">
+        <table id="historiqueTable">
+          <thead><tr><th>Date</th><th>Action</th><th>Auteur</th><th>Détails</th></tr></thead>
+          <tbody id="historiqueBody"><tr><td colspan="4" style="text-align:center;color:#8aa89a;">Chargement de l'historique...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-ajout" class="page">
+    <h3 style="color:#39FF6A;margin-bottom:16px;">➕ Ajouter un membre</h3>
+    <div class="admin-form">
+      <form id="ajoutMembreForm">
+        <div class="form-row">
+          <div class="form-group"><label>Nom</label><input type="text" id="ajoutNom" required></div>
+          <div class="form-group"><label>Grade</label>
+            <select id="ajoutGrade"><option>👑 Boss</option><option>🥈 Bras droit</option><option>🎖️ Haut Grade</option><option>⚔️ Soldat</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>🌿 Drogue</label><input type="number" id="ajoutDrogue" value="0"></div>
+          <div class="form-group"><label>🌿 Branches</label><input type="number" id="ajoutBranche" value="0"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>🔫 Braquages</label><input type="number" id="ajoutBraquages" value="0"></div>
+          <div class="form-group"><label>🎁 Prime</label><input type="number" id="ajoutPrime" value="0"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>📊 Quota</label><input type="number" id="ajoutQuota" value="0"></div>
+          <div class="form-group"><label>💵 À payer</label><input type="number" id="ajoutPayer" value="0"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>📝 Observation</label><textarea id="ajoutObs" rows="2"></textarea></div>
+          <div class="form-group"><label>Statut</label>
+            <select id="ajoutStatut"><option value="Actif">Actif</option><option value="Inactif">Inactif</option><option value="Suspendu">Suspendu</option><option value="VIP">VIP</option></select>
+          </div>
+        </div>
+        <div style="border-top:1px solid #1f5c3a;padding-top:12px;margin-top:12px;">
+          <div style="color:#7CFFA0;font-size:12px;letter-spacing:2px;margin-bottom:8px;">🔐 COMPTE UTILISATEUR</div>
+          <div class="form-row">
+            <div class="form-group"><label>👤 Pseudo</label><input type="text" id="ajoutPseudo" placeholder="ID de connexion" required></div>
+            <div class="form-group"><label>🔑 Mot de passe</label><input type="text" id="ajoutMdp" placeholder="Mot de passe" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Rôle</label><select id="ajoutRole"><option value="membre">Membre</option><option value="admin">Admin</option></select></div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn" onclick="resetForm('ajoutMembreForm')">Annuler</button>
+          <button type="submit" class="btn-success">➕ Ajouter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="page-points" class="page">
+    <h3 style="color:#39FF6A;margin-bottom:16px;">🗺️ Gestion des points GPS</h3>
+    <div class="points-admin-grid">
+      <div style="background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:10px;padding:20px;">
+        <h4 style="color:#7CFFA0;border-bottom:1px solid #1f5c3a;padding-bottom:8px;margin-bottom:12px;">➕ Ajouter un point (cliquez sur la carte)</h4>
+        <div class="clickable-map-container" id="clickableMapContainer">
+          <img src="https://i.imgur.com/lsJkEJZ.png" alt="Carte GTA" id="clickableMapImg">
+          <div class="map-marker" id="mapMarker"></div>
+        </div>
+        <div class="map-coords-display">Coordonnées : <span id="clickCoordsDisplay">Aucun point sélectionné</span></div>
+        <form id="addPointForm">
+          <input type="hidden" id="addPointX" value=""><input type="hidden" id="addPointY" value="">
+          <div class="modal-field"><label>Nom</label><input type="text" id="addPointNom" placeholder="Ex: Quartier Général" required></div>
+          <div class="modal-field"><label>Description</label><input type="text" id="addPointDesc" placeholder="Ex: Base secrète"></div>
+          <div class="modal-actions"><button type="reset" class="btn" id="resetPointBtn">Effacer</button><button type="submit" class="btn-success">💾 Ajouter</button></div>
+        </form>
+        <div style="margin-top:12px;font-size:12px;color:#8aa89a;border-top:1px solid #1f5c3a;padding-top:10px;">💡 Cliquez sur la carte pour définir la position, puis entrez les informations.</div>
+      </div>
+      <div class="points-list">
+        <h4>📌 Points existants</h4>
+        <div id="pointsListContainer"><div style="color:#8aa89a;text-align:center;padding:20px;">Chargement...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-missions" class="page">
+    <div class="admin-form">
+      <h3 style="color:#39FF6A;margin-bottom:16px;">🌿 Gérer les missions</h3>
+      <form id="missionsForm">
+        <div id="missionsEditContainer"></div>
+        <div class="modal-actions"><button type="button" class="btn" onclick="chargerMissions()">↻ Réinitialiser</button><button type="submit" class="btn-success">💾 Sauvegarder</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="page-rdv" class="page">
+    <div style="background:rgba(15,29,22,0.9);border:1px solid #1f5c3a;border-radius:10px;padding:18px;">
+      <h3 style="color:#39FF6A;margin-bottom:16px;">📅 Modifier la prochaine réunion</h3>
+      <form id="rdvForm">
+        <div class="modal-field"><label>🎯 Titre</label><input type="text" id="rdvTitre" placeholder="Ex: RÉUNION GROUPE"></div>
+        <div class="modal-field"><label>📝 Description</label><input type="text" id="rdvDesc" placeholder="Ex: Point stratégique"></div>
+        <div class="modal-field"><label>💰 Récompense</label><input type="text" id="rdvRecompense" placeholder="Ex: —"></div>
+        <div class="modal-field"><label>⏰ Départ</label><input type="text" id="rdvDepart" placeholder="Ex: Aujourd'hui - 21:00"></div>
+        <div class="modal-field"><label>📍 Lieu</label><input type="text" id="rdvLieu" placeholder="Ex: Sandy Shores"></div>
+        <div class="modal-actions"><button type="button" class="btn" onclick="chargerRdv()">↻ Réinitialiser</button><button type="submit" class="btn-success">💾 Sauvegarder</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- PAGE DROGUES ADMIN (embed modifiable) -->
+  <div id="page-drogues" class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+      <h3 style="color:#39FF6A;letter-spacing:3px;text-transform:uppercase;font-size:20px;">💊 Gestion des drogues</h3>
+      <button class="btn btn-success admin-only" onclick="ouvrirModalAjoutDrogue()">➕ Ajouter une drogue</button>
+    </div>
+
+    <!-- Embed des prix par taux -->
+    <div class="widget-calc" style="border-color:#39FF6A55; margin-bottom:20px;">
+      <div style="color:#7CFFA0;font-size:14px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #1f5c3a;padding-bottom:8px;margin-bottom:10px;">
+        📊 PRIX PAR TAUX DE PURIFICATION
+      </div>
+      <div style="font-size:13px;color:#8aa89a;margin-bottom:10px;">Prix de revente estimé en fonction du taux de purification (achat à prix fixe).</div>
+      <div id="prixParTaux" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; text-align:center;">
+        <div><span style="color:#FFD86B;">50%</span><br><span id="prix50">0 $</span></div>
+        <div><span style="color:#FFD86B;">70%</span><br><span id="prix70">0 $</span></div>
+        <div><span style="color:#FFD86B;">90%</span><br><span id="prix90">0 $</span></div>
+        <div><span style="color:#FFD86B;">99%</span><br><span id="prix99">0 $</span></div>
+      </div>
+      <div style="font-size:11px;color:#8aa89a;margin-top:8px;">* Basé sur la première drogue de la liste (cliquez sur une drogue pour modifier).</div>
+    </div>
+
+    <div class="drogue-grid" id="droguesAdminGrid"></div>
+  </div>
+
+  <!-- PAGE SEMAINES -->
+  <div id="page-semaines" class="page">
+    <h3 style="color:#39FF6A;margin-bottom:16px;">📅 Historique des Semaines</h3>
+    <div class="admin-form">
+      <div class="table-wrapper">
+        <table id="semainesTable">
+          <thead><tr><th>Semaine</th><th>Année</th><th>Nombre de membres</th><th>Total Quota</th><th>Date de capture</th></tr></thead>
+          <tbody id="semainesBody"><tr><td colspan="5" style="text-align:center;color:#8aa89a;">Chargement des semaines...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE BRAQUAGE -->
+  <div id="page-braquage" class="page">
+    <h3 style="color:#39FF6A;margin-bottom:16px;">🔫 Gestion des Braquages</h3>
+    <div class="admin-form">
+      <form id="braquageForm">
+        <div class="form-row">
+          <div class="form-group"><label>Nom du braquage</label><input type="text" id="braquageNom" required></div>
+          <div class="form-group"><label>Montant total récolté ($)</label><input type="number" id="braquageMontant" required></div>
+        </div>
+        <div id="braquageParticipants"></div>
+        <div class="form-actions">
+          <button type="button" class="btn" onclick="resetForm('braquageForm')">Annuler</button>
+          <button type="submit" class="btn-success">💾 Enregistrer le braquage</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- PAGE VENTES (admin) -->
+  <div id="page-ventes" class="page">
+    <h3 style="color:#39FF6A;margin-bottom:16px;">📊 Toutes les ventes de drogue</h3>
+    <div class="admin-form">
+      <div class="table-wrapper">
+        <table id="ventesCompletesTable">
+          <thead><tr><th>Date</th><th>Vendeur</th><th>Type</th><th>Quantité</th><th>Montant</th><th>Taux</th></tr></thead>
+          <tbody id="ventesCompletesBody"><tr><td colspan="6" style="text-align:center;color:#8aa89a;">Chargement...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE LOC -->
+  <div id="page-loc" class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+      <h3 style="color:#39FF6A;letter-spacing:3px;text-transform:uppercase;font-size:20px;">📌 LOCALISATION & STOCKS</h3>
+      <button class="btn" onclick="chargerLoc()" style="font-size:12px;">🔄 Rafraîchir</button>
+    </div>
+    <div id="locButtonsContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap:15px; margin-bottom:25px;"></div>
+    <div id="locImageContainer">
+      <div id="locImagePlaceholder">Cliquez sur un bouton pour voir l'image associée</div>
+      <div id="locImageLoader">
+        <div class="spinner"></div>
+        <div class="status">Chargement...</div>
+      </div>
+      <img id="locImageDisplay" src="" alt="Image de localisation">
+    </div>
+  </div>
+
+</div> <!-- FIN DASHBOARD -->
+
+<!-- TASKBAR -->
+<div id="taskbar">
+  <span class="brand">⚡ SECTEUR47</span>
+  <span class="user-info">👤 <span id="taskbarUser">Utilisateur</span></span>
+  <button class="logout-btn" onclick="deconnexion()">⏻ Déconnexion</button>
+  <span class="clock" id="clockDisplay">00:00</span>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box">
+    <h2>✏️ Modifier <span id="modalNomDisplay"></span><button class="close-btn" onclick="fermerModal('editModal')">&times;</button></h2>
+    <form id="editForm">
+      <input type="hidden" id="editAncienNom">
+      <div class="modal-field"><label>Nom</label><input type="text" id="editNom" required></div>
+      <div class="modal-field"><label>Grade</label><select id="editGrade"><option>👑 Boss</option><option>🥈 Bras droit</option><option>🎖️ Haut Grade</option><option>⚔️ Soldat</option></select></div>
+      <div class="modal-field"><label>🌿 Drogue</label><input type="number" id="editDrogue" value="0"></div>
+      <div class="modal-field"><label>🌿 Branches</label><input type="number" id="editBranche" value="0"></div>
+      <div class="modal-field"><label>🔫 Braquages</label><input type="number" id="editBraquages" value="0"></div>
+      <div class="modal-field"><label>🎁 Prime</label><input type="number" id="editPrime" value="0"></div>
+      <div class="modal-field"><label>📊 Quota</label><input type="number" id="editQuota" value="0"></div>
+      <div class="modal-field"><label>💵 À payer</label><input type="number" id="editPayer" value="0"></div>
+      <div class="modal-field"><label>📝 Observation</label><textarea id="editObs" rows="2"></textarea></div>
+      <div class="modal-field"><label>Statut</label><select id="editStatut"><option value="Actif">Actif</option><option value="Inactif">Inactif</option><option value="Suspendu">Suspendu</option><option value="VIP">VIP</option></select></div>
+      <div class="modal-actions"><button type="button" class="btn" onclick="fermerModal('editModal')">Annuler</button><button type="submit" class="btn-success">💾 Enregistrer</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="contactModal">
+  <div class="modal-box">
+    <h2 id="contactModalTitle">✏️ Contact <button class="close-btn" onclick="fermerModal('contactModal')">&times;</button></h2>
+    <form id="contactForm">
+      <input type="hidden" id="contactAncienNom">
+      <div class="modal-field"><label>Nom</label><input type="text" id="contactNom" required></div>
+      <div class="modal-field"><label>Grade</label>
+        <select id="contactType">
+          <option value="👑 Boss">👑 Boss</option>
+          <option value="🥈 Bras droit">🥈 Bras droit</option>
+          <option value="🎖️ Haut Grade">🎖️ Haut Grade</option>
+          <option value="⚔️ Soldat">⚔️ Soldat</option>
+          <option value="Fournisseur">Fournisseur</option>
+          <option value="Associé">Associé</option>
+        </select>
+      </div>
+      <div class="modal-field"><label>Numéro</label><input type="text" id="contactNumero"></div>
+      <div class="modal-field"><label>Discord</label><input type="text" id="contactDiscord"></div>
+      <div class="modal-actions"><button type="button" class="btn" onclick="fermerModal('contactModal')">Annuler</button><button type="submit" class="btn-success">💾 Enregistrer</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="vehiculeModal">
+  <div class="modal-box">
+    <h2 id="vehiculeModalTitle">🚗 Véhicule <button class="close-btn" onclick="fermerModal('vehiculeModal')">&times;</button></h2>
+    <form id="vehiculeForm">
+      <input type="hidden" id="vehiculeAncienNom">
+      <div class="modal-field"><label>Nom</label><input type="text" id="vehiculeNom" required></div>
+      <div class="modal-field"><label>Coffre (KG)</label><input type="number" id="vehiculeCoffre" required></div>
+      <div class="modal-field"><label>Utilisation</label><input type="text" id="vehiculeUtilisation"></div>
+      <div class="modal-field"><label>Plaque</label><input type="text" id="vehiculePlaque"></div>
+      <div class="modal-field"><label>URL Image</label><input type="text" id="vehiculeImage"></div>
+      <div class="modal-actions"><button type="button" class="btn" onclick="fermerModal('vehiculeModal')">Annuler</button><button type="submit" class="btn-success">💾 Enregistrer</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ticketModal">
+  <div class="modal-box" style="max-width:500px;">
+    <h2 style="color:#39FF6A;font-size:20px;border-bottom:1px solid #1f5c3a;padding-bottom:10px;margin-bottom:18px;display:flex;justify-content:space-between;">🧾 Déclarer une vente<button class="close-btn" onclick="fermerModal('ticketModal')" style="background:none;border:none;color:#FF5C5C;font-size:24px;cursor:pointer;">&times;</button></h2>
+    <form id="ticketForm">
+      <div style="margin-bottom:15px;">
+        <label style="color:#7CFFA0;font-size:12px;font-weight:600;display:block;margin-bottom:4px;">1. Quel type de drogue ?</label>
+        <select id="ticketDrogue" style="width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:8px 12px;color:#fff;font-family:inherit;font-size:14px;">
+          <option value="Cannabis">🌿 Cannabis</option>
+          <option value="Mexicana">🌵 Mexicana</option>
+          <option value="Coke">❄️ Coke</option>
+        </select>
+      </div>
+      <div style="margin-bottom:15px;">
+        <label style="color:#7CFFA0;font-size:12px;font-weight:600;display:block;margin-bottom:4px;">2. Combien de pochons as-tu sortis du stock ?</label>
+        <input type="number" id="ticketQuantite" min="1" value="1" style="width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:8px 12px;color:#fff;font-family:inherit;font-size:14px;" required>
+      </div>
+      <div style="margin-bottom:15px;">
+        <label style="color:#7CFFA0;font-size:12px;font-weight:600;display:block;margin-bottom:4px;">3. Quel est le taux de purification ? (en %)</label>
+        <input type="number" id="ticketTaux" min="0" max="100" value="70" style="width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:8px 12px;color:#fff;font-family:inherit;font-size:14px;" required>
+      </div>
+      <div style="margin-bottom:15px;">
+        <label style="color:#7CFFA0;font-size:12px;font-weight:600;display:block;margin-bottom:4px;">4. Pour quelle somme les as-tu vendus ? (en $)</label>
+        <input type="number" id="ticketMontant" min="0" step="1" value="0" style="width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:8px 12px;color:#fff;font-family:inherit;font-size:14px;" required>
+      </div>
+      <div id="ticketResult" style="margin-top:12px;font-size:13px;color:#8aa89a;text-align:center;"></div>
+      <div style="margin-top:20px;border-top:1px solid #1f5c3a;padding-top:16px;display:flex;justify-content:flex-end;gap:12px;"><button type="button" class="btn" onclick="fermerModal('ticketModal')">Annuler</button><button type="submit" class="btn-success" style="padding:8px 24px;">💾 Valider la vente</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="rechargeModal">
+  <div class="modal-box" style="max-width:500px;">
+    <h2 style="color:#39FF6A;font-size:20px;border-bottom:1px solid #1f5c3a;padding-bottom:10px;margin-bottom:18px;display:flex;justify-content:space-between;">📦 Rechargement de stock<button class="close-btn" onclick="fermerModal('rechargeModal')" style="background:none;border:none;color:#FF5C5C;font-size:24px;cursor:pointer;">&times;</button></h2>
+    <form id="rechargeForm">
+      <div style="margin-bottom:15px;">
+        <label style="color:#7CFFA0;font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Drogue</label>
+        <select id="rechargeDrogue" style="width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:8px 12px;color:#fff;font-family:inherit;font-size:14px;">
+          <option value="Cannabis">🌿 Cannabis</option>
+          <option value="Mexicana">🌵 Mexicana</option>
+          <option value="Coke">❄️ Coke</option>
+        </select>
+      </div>
+      <div style="margin-bottom:15px;">
+        <label style="color:#7CFFA0;font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Quantité ajoutée</label>
+        <input type="number" id="rechargeQuantite" min="1" value="1" style="width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:8px 12px;color:#fff;font-family:inherit;font-size:14px;" required>
+      </div>
+      <div style="margin-bottom:15px;">
+        <label style="color:#7CFFA0;font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Taux de purification (optionnel)</label>
+        <input type="number" id="rechargeTaux" min="0" max="100" value="70" style="width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:8px 12px;color:#fff;font-family:inherit;font-size:14px;">
+      </div>
+      <div id="rechargeResult" style="margin-top:12px;font-size:13px;color:#8aa89a;text-align:center;"></div>
+      <div style="margin-top:20px;border-top:1px solid #1f5c3a;padding-top:16px;display:flex;justify-content:flex-end;gap:12px;"><button type="button" class="btn" onclick="fermerModal('rechargeModal')">Annuler</button><button type="submit" class="btn-success" style="padding:8px 24px;">💾 Recharger</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="laboModal">
+  <div class="modal-box" style="max-width:500px;">
+    <h2 style="color:#39FF6A;font-size:20px;border-bottom:1px solid #1f5c3a;padding-bottom:10px;margin-bottom:18px;display:flex;justify-content:space-between;">🧪 Déclaration Labo<button class="close-btn" onclick="fermerModal('laboModal')" style="background:none;border:none;color:#FF5C5C;font-size:24px;cursor:pointer;">&times;</button></h2>
+    <form id="laboForm">
+      <div style="margin-bottom:15px;"><label style="color:#7CFFA0;font-size:12px;font-weight:600;display:block;margin-bottom:4px;">1. Combien de branches as-tu récoltées ?</label><input type="number" id="laboBranches" min="0" value="0" style="width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:8px 12px;color:#fff;font-family:inherit;font-size:14px;" required></div>
+      <div style="margin-bottom:15px;"><label style="color:#7CFFA0;font-size:12px;font-weight:600;display:block;margin-bottom:4px;">2. Combien de graines as-tu plantées ?</label><input type="number" id="laboGraines" min="0" value="0" style="width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:8px 12px;color:#fff;font-family:inherit;font-size:14px;" required></div>
+      <div id="laboResult" style="margin-top:12px;font-size:13px;color:#8aa89a;text-align:center;"></div>
+      <div style="margin-top:20px;border-top:1px solid #1f5c3a;padding-top:16px;display:flex;justify-content:flex-end;gap:12px;"><button type="button" class="btn" onclick="fermerModal('laboModal')">Annuler</button><button type="submit" class="btn-success" style="padding:8px 24px;background:#C79CFF;color:#0a0f0c;">💾 Valider la déclaration</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="venteBrancheModal">
+  <div class="modal-box" style="max-width:500px;">
+    <h2 style="color:#39FF6A;font-size:20px;border-bottom:1px solid #1f5c3a;padding-bottom:10px;margin-bottom:18px;display:flex;justify-content:space-between;">💸 Vente de branches<button class="close-btn" onclick="fermerModal('venteBrancheModal')" style="background:none;border:none;color:#FF5C5C;font-size:24px;cursor:pointer;">&times;</button></h2>
+    <form id="venteBrancheForm">
+      <div style="margin-bottom:15px;color:#FFA53C;font-size:14px;border:1px solid #FFA53C55;padding:10px;border-radius:8px;background:#FFA53C11;text-align:center;">💡 Prix unitaire fixe : <strong>1 branche = 55 $</strong></div>
+      <div style="margin-bottom:15px;"><label style="color:#7CFFA0;font-size:12px;font-weight:600;display:block;margin-bottom:4px;">1. Combien de branches vends-tu ?</label><input type="number" id="venteBrancheQuantite" min="1" value="1" style="width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:8px 12px;color:#fff;font-family:inherit;font-size:14px;" required></div>
+      <div style="margin-bottom:15px;"><label style="color:#7CFFA0;font-size:12px;font-weight:600;display:block;margin-bottom:4px;">2. Pour quelle somme les as-tu vendues ? (en $)</label><input type="number" id="venteBrancheMontant" min="0" step="1" value="0" style="width:100%;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:8px 12px;color:#fff;font-family:inherit;font-size:14px;" required></div>
+      <div id="venteBrancheResult" style="margin-top:12px;font-size:13px;color:#8aa89a;text-align:center;"></div>
+      <div style="margin-top:20px;border-top:1px solid #1f5c3a;padding-top:16px;display:flex;justify-content:flex-end;gap:12px;"><button type="button" class="btn" onclick="fermerModal('venteBrancheModal')">Annuler</button><button type="submit" class="btn-success" style="padding:8px 24px;background:#FFA53C;color:#0a0f0c;">💾 Valider la vente</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="drogueModal">
+  <div class="modal-box">
+    <h2 id="drogueModalTitle">➕ Ajouter une drogue<button class="close-btn" onclick="fermerModal('drogueModal')">&times;</button></h2>
+    <form id="drogueForm">
+      <input type="hidden" id="drogueAncienTitre">
+      <div class="modal-field"><label>Titre</label><input type="text" id="drogueTitre" required></div>
+      <div class="modal-field"><label>Prix d'achat</label><input type="number" id="droguePrixAchat" step="1" min="0" required></div>
+      <div class="modal-field"><label>Prix de revente</label><input type="number" id="droguePrixRevente" step="1" min="0" required></div>
+      <div class="modal-field"><label>Lieu</label><input type="text" id="drogueLieu" placeholder="Ex: Sandy Shores"></div>
+      <div class="modal-actions"><button type="button" class="btn" onclick="fermerModal('drogueModal')">Annuler</button><button type="submit" class="btn-success">💾 Enregistrer</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ajoutDepenseModal">
+  <div class="modal-box" style="max-width:450px;">
+    <h2>➕ Ajouter une dépense<button class="close-btn" onclick="fermerModal('ajoutDepenseModal')">&times;</button></h2>
+    <form id="ajoutDepenseForm">
+      <div class="modal-field"><label>Description</label><input type="text" id="depenseDesc" required></div>
+      <div class="modal-field"><label>Montant ($)</label><input type="number" id="depenseMontant" min="0" required></div>
+      <div class="modal-actions"><button type="button" class="btn" onclick="fermerModal('ajoutDepenseModal')">Annuler</button><button type="submit" class="btn-success">💾 Valider</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modifCoffreModal">
+  <div class="modal-box" style="max-width:450px;">
+    <h2>💰 Modifier le Coffre<button class="close-btn" onclick="fermerModal('modifCoffreModal')">&times;</button></h2>
+    <form id="modifCoffreForm">
+      <div class="modal-field"><label>Nouveau montant ($)</label><input type="number" id="coffreNewMontant" min="0" step="1000" required></div>
+      <div class="modal-actions"><button type="button" class="btn" onclick="fermerModal('modifCoffreModal')">Annuler</button><button type="submit" class="btn-success">💾 Enregistrer</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="notifModal">
+  <div class="modal-box">
+    <h2>🔔 Envoyer une notification d'urgence<button class="close-btn" onclick="fermerModal('notifModal')">&times;</button></h2>
+    <form id="notifForm">
+      <div class="modal-field"><label>Message</label><textarea id="notifMessage" rows="3" placeholder="Ex: Une réunion de groupe est organisée dans 10 minutes !" required></textarea></div>
+      <div class="modal-field"><label>Durée d'affichage (secondes)</label><input type="number" id="notifDuree" value="6" min="1" max="60" style="width:100px;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:6px 10px;color:#fff;font-family:inherit;font-size:13px;"></div>
+      <div class="modal-actions"><button type="button" class="btn" onclick="fermerModal('notifModal')">Annuler</button><button type="submit" class="btn-success">📨 Envoyer à tous</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="objectifsModal">
+  <div class="modal-box">
+    <h2>🎯 Gérer les Objectifs<button class="close-btn" onclick="fermerModal('objectifsModal')">&times;</button></h2>
+    <div style="margin-bottom:15px;border-bottom:1px solid #1f5c3a;padding-bottom:10px;">
+      <h4 style="color:#7CFFA0;">Ajouter un objectif</h4>
+      <form id="ajoutObjectifForm" style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+        <input type="text" id="objDesc" placeholder="Description (ex: Objectif trimestriel)" style="flex:1;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:6px 10px;color:#fff;font-family:inherit;">
+        <input type="number" id="objValeur" placeholder="Montant ($)" style="width:150px;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:6px 10px;color:#fff;font-family:inherit;">
+        <button type="submit" class="btn-success" style="padding:6px 16px;">➕ Ajouter</button>
+      </form>
+    </div>
+    <div id="objectifsAdminList" style="max-height:300px;overflow-y:auto;">
+      <div style="color:#8aa89a;text-align:center;padding:10px;">Chargement...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// SCRIPT COMPLET ADAPTÉ POUR SITE WEB AUTONOME (Supabase uniquement)
+// ============================================================
+
+const SUPABASE_URL = 'https://aqxvwbfurowamfaamsgm.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_PQUtjhBWIlHa1o821A1AOA_TQZKOGtS';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let allMembres = [];
+let allVehicules = [];
+let allMissions = [];
+let allContacts = [];
+let allDrogues = [];
+let allPoints = [];
+let chatInitialized = false;
+let missionsActive = true;
+let webhookInterval = null;
+
+// Horloge
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clockDisplay').textContent =
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+setInterval(updateClock, 1000); updateClock();
+function updateTaskbarUser(pseudo) { document.getElementById('taskbarUser').textContent = pseudo; }
+
+// Toast & Loading
+function showToast(pseudo) {
+  document.getElementById('toastPseudo').textContent = pseudo;
+  document.getElementById('toastMsg').textContent = 'Bienvenue dans le Secteur 47';
+  document.getElementById('toast').classList.add('show');
+  setTimeout(() => document.getElementById('toast').classList.remove('show'), 6000);
+}
+function fermerToast() { document.getElementById('toast').classList.remove('show'); }
+function showLoading(pseudo) {
+  document.getElementById('loadingPseudo').textContent = pseudo || '...';
+  document.getElementById('loadingOverlay').classList.add('active');
+}
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
+
+// ============================================================
+// AUTHENTIFICATION (Supabase)
+// ============================================================
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const pseudo = document.getElementById('loginPseudo').value.trim();
+  const mdp = document.getElementById('loginMdp').value.trim();
+  if (!pseudo || !mdp) {
+    document.getElementById('loginError').textContent = 'Veuillez remplir tous les champs.';
+    return;
+  }
+  document.getElementById('loginError').textContent = '';
+  showLoading(pseudo);
+  try {
+    const { data, error } = await supabase
+      .from('utilisateurs')
+      .select('pseudo, motdepasse, role')
+      .eq('pseudo', pseudo)
+      .eq('motdepasse', mdp)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) {
+      hideLoading();
+      document.getElementById('loginError').textContent = '❌ Pseudo ou mot de passe incorrect.';
+      return;
+    }
+    // Mettre à jour la date de dernière connexion
+    await supabase
+      .from('utilisateurs')
+      .update({ derniere_connexion: new Date().toISOString() })
+      .eq('pseudo', pseudo);
+    currentUser = { pseudo: data.pseudo, role: data.role };
+    sessionStorage.setItem('user', JSON.stringify(currentUser));
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('dashboard').classList.add('show');
+    document.getElementById('taskbar').style.display = 'flex';
+    document.getElementById('userPseudoDisplay').textContent = currentUser.pseudo;
+    updateTaskbarUser(currentUser.pseudo);
+    if (currentUser.role === 'admin') {
+      document.getElementById('adminDropdown').style.display = 'inline-block';
+      document.body.classList.add('admin-mode');
+    } else {
+      document.body.classList.remove('admin-mode');
+    }
+    hideLoading();
+    showToast(currentUser.pseudo);
+    chargerDonnees();
+    afficherBoutonRecharge();
+  } catch (err) {
+    hideLoading();
+    document.getElementById('loginError').textContent = 'Erreur : ' + err.message;
+    console.error(err);
+  }
+});
+
+if (sessionStorage.getItem('user')) {
+  try {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    if (user && user.pseudo) {
+      currentUser = user;
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('dashboard').classList.add('show');
+      document.getElementById('taskbar').style.display = 'flex';
+      document.getElementById('userPseudoDisplay').textContent = user.pseudo;
+      updateTaskbarUser(user.pseudo);
+      if (user.role === 'admin') {
+        document.getElementById('adminDropdown').style.display = 'inline-block';
+        document.body.classList.add('admin-mode');
+      }
+      chargerDonnees();
+      showToast(user.pseudo);
+      afficherBoutonRecharge();
+    }
+  } catch(e) {}
+}
+
+function deconnexion() {
+  sessionStorage.removeItem('user');
+  currentUser = null;
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('dashboard').classList.remove('show');
+  document.getElementById('taskbar').style.display = 'none';
+  document.body.classList.remove('admin-mode');
+  chatInitialized = false;
+  fermerToast();
+  if(webhookInterval) clearInterval(webhookInterval);
+}
+function isAdmin() { return currentUser && currentUser.role === 'admin'; }
+
+// ============================================================
+// BOUTON RECHARGEMENT STOCK
+// ============================================================
+async function afficherBoutonRecharge() {
+  if (!currentUser) return;
+  if (currentUser.role === 'admin') {
+    document.getElementById('rechargeStockBtn').style.display = 'block';
+    return;
+  }
+  try {
+    const { data, error } = await supabase
+      .from('membres')
+      .select('grade')
+      .eq('nom', currentUser.pseudo)
+      .maybeSingle();
+    if (error) throw error;
+    const autorises = ['👑 Boss', '🥈 Bras droit', '🎖️ Haut Grade'];
+    if (data && autorises.includes(data.grade)) {
+      document.getElementById('rechargeStockBtn').style.display = 'block';
+    } else {
+      document.getElementById('rechargeStockBtn').style.display = 'none';
+    }
+  } catch (e) {
+    document.getElementById('rechargeStockBtn').style.display = 'none';
+  }
+}
+
+// ============================================================
+// CHARGEMENT DES DONNÉES PRINCIPALES
+// ============================================================
+async function chargerDonnees() {
+  updateLastUpdate();
+  try {
+    const { data: membres, error } = await supabase
+      .from('membres')
+      .select('*')
+      .order('grade', { ascending: true });
+    if (error) throw error;
+    allMembres = membres || [];
+    const stats = { membres: allMembres, totals: { totalCA: 0 }, hierarchie: { boss: 0, brasDroit: 0, hautGrade: 0, soldat: 0 }, totalMembres: allMembres.length };
+    allMembres.forEach(m => {
+      stats.totals.totalCA += (m.quota || 0);
+      if (m.grade && m.grade.includes('Boss')) stats.hierarchie.boss++;
+      else if (m.grade && m.grade.includes('Bras droit')) stats.hierarchie.brasDroit++;
+      else if (m.grade && m.grade.includes('Haut Grade')) stats.hierarchie.hautGrade++;
+      else if (m.grade && m.grade.includes('Soldat')) stats.hierarchie.soldat++;
+    });
+    afficherDashboard(stats);
+    afficherTableauxMembres(allMembres);
+    afficherHierarchie(stats);
+    afficherTop5(allMembres);
+    chargerRevenus();
+    chargerCoffre();
+    chargerObjectifs();
+    chargerStatutsSummary(allMembres);
+    chargerEtatMissions();
+    chargerDepenses();
+    chargerDernierBraquage();
+    chargerStockDrogues();
+    afficherBoutonRecharge();
+    chargerStockBranches();
+  } catch (err) {
+    console.error('Erreur chargement données:', err);
+  }
+  chargerMissions();
+  chargerVehicules();
+  chargerRdv();
+  chargerContacts();
+  chargerDrogues();
+  chargerPoints();
+  chargerHistorique();
+  chargerSemaines();
+  chargerVentesCompletes();
+  lancerWebhooks();
+}
+function updateLastUpdate() {
+  document.getElementById('lastUpdateDisplay').textContent = new Date().toLocaleString('fr-FR');
+}
+
+// ============================================================
+// STOCK BRANCHES (pour plantation)
+// ============================================================
+async function chargerStockBranches() {
+  try {
+    const { data, error } = await supabase
+      .from('stock')
+      .select('nom, quantite');
+    if (error) throw error;
+    let total = 0;
+    data.forEach(item => {
+      if (item.nom.toLowerCase().includes('branche')) total += Number(item.quantite);
+    });
+    document.getElementById('stockBranchesDisplay').textContent = total.toLocaleString('fr-FR');
+  } catch (e) {
+    console.error('Erreur stock branches:', e);
+  }
+}
+
+// ============================================================
+// WIDGET STOCK DROGUE
+// ============================================================
+async function chargerStockDrogues() {
+  try {
+    const { data, error } = await supabase
+      .from('stock_drogues')
+      .select('type, quantite');
+    if (error) throw error;
+    const container = document.getElementById('dashStock');
+    if (!container) return;
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div style="color:#8aa89a;text-align:center;">Aucun stock enregistré.</div>';
+      return;
+    }
+    let html = '';
+    data.forEach(item => {
+      html += `<div class="stat-card-dash" style="border-color:#C79CFF55;">
+        <div class="stat-label">📦 ${item.type}</div>
+        <div class="stat-number">${Number(item.quantite).toLocaleString('fr-FR')}</div>
+        <div class="stat-sub">pochons</div>
+      </div>`;
+    });
+    container.innerHTML = html;
+  } catch (e) {
+    console.error('Erreur stock drogue:', e);
+  }
+}
+
+// ============================================================
+// RECHARGEMENT DE STOCK
+// ============================================================
+function ouvrirRechargeStock() {
+  if (!currentUser) return alert('Connecte-toi d\'abord.');
+  document.getElementById('rechargeDrogue').value = 'Cannabis';
+  document.getElementById('rechargeQuantite').value = 1;
+  document.getElementById('rechargeTaux').value = 70;
+  document.getElementById('rechargeResult').innerHTML = '';
+  document.getElementById('rechargeModal').classList.add('active');
+}
+
+document.getElementById('rechargeForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!currentUser) { alert('Connecte-toi d\'abord !'); return; }
+  const type = document.getElementById('rechargeDrogue').value;
+  const quantite = parseInt(document.getElementById('rechargeQuantite').value) || 0;
+  const taux = parseInt(document.getElementById('rechargeTaux').value) || 0;
+  const resultDiv = document.getElementById('rechargeResult');
+  if (quantite <= 0) {
+    resultDiv.innerHTML = '<span style="color:#FF5C5C;">❌ Entrez une quantité valide.</span>';
+    return;
+  }
+  const submitBtn = this.querySelector('button[type="submit"]');
+  submitBtn.disabled = true; submitBtn.textContent = '⏳ Envoi...';
+  resultDiv.innerHTML = '<span style="color:#7CFFA0;">⏳ Rechargement en cours...</span>';
+
+  try {
+    // Vérifier si le type existe déjà
+    const { data: existing, error: checkErr } = await supabase
+      .from('stock_drogues')
+      .select('type, quantite')
+      .eq('type', type)
+      .maybeSingle();
+    if (checkErr) throw checkErr;
+    if (existing) {
+      const newQty = Number(existing.quantite) + quantite;
+      const { error: updErr } = await supabase
+        .from('stock_drogues')
+        .update({ quantite: newQty })
+        .eq('type', type);
+      if (updErr) throw updErr;
+    } else {
+      const { error: insErr } = await supabase
+        .from('stock_drogues')
+        .insert([{ type: type, quantite: quantite }]);
+      if (insErr) throw insErr;
+    }
+    // Ajouter à l'historique
+    await supabase
+      .from('historique')
+      .insert([{ action: 'RECHARGEMENT STOCK', auteur: 'Admin', details: type + ' +' + quantite + ' (taux ' + taux + '%)', created_at: new Date().toISOString() }]);
+    resultDiv.innerHTML = '<span style="color:#39FF6A;">✅ Stock rechargé : ' + quantite + ' pochons de ' + type + ' ajoutés.</span>';
+    submitBtn.disabled = false; submitBtn.textContent = '💾 Recharger';
+    chargerStockDrogues();
+    setTimeout(() => fermerModal('rechargeModal'), 1500);
+  } catch (err) {
+    resultDiv.innerHTML = '<span style="color:#FF5C5C;">❌ Erreur : ' + err.message + '</span>';
+    submitBtn.disabled = false; submitBtn.textContent = '💾 Recharger';
+  }
+});
+
+// ============================================================
+// TICKET DE VENTE
+// ============================================================
+function ouvrirTicketVente() {
+  if (!currentUser) { alert('Connecte-toi d\'abord !'); return; }
+  document.getElementById('ticketDrogue').value = 'Cannabis';
+  document.getElementById('ticketQuantite').value = 1;
+  document.getElementById('ticketTaux').value = 70;
+  document.getElementById('ticketMontant').value = 0;
+  document.getElementById('ticketResult').innerHTML = '';
+  document.getElementById('ticketModal').classList.add('active');
+}
+
+document.getElementById('ticketForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!currentUser) { alert('Connecte-toi d\'abord !'); return; }
+  const drogue = document.getElementById('ticketDrogue').value;
+  const quantite = parseInt(document.getElementById('ticketQuantite').value) || 0;
+  const taux = parseInt(document.getElementById('ticketTaux').value) || 0;
+  const montant = parseInt(document.getElementById('ticketMontant').value) || 0;
+  const resultDiv = document.getElementById('ticketResult');
+  if (quantite <= 0 || montant <= 0) {
+    resultDiv.innerHTML = '<span style="color:#FF5C5C;">❌ Entrez une quantité et un montant valides.</span>';
+    return;
+  }
+  const submitBtn = this.querySelector('button[type="submit"]');
+  submitBtn.disabled = true; submitBtn.textContent = '⏳ Envoi...';
+  resultDiv.innerHTML = '<span style="color:#7CFFA0;">⏳ Vente en cours...</span>';
+
+  const pseudo = currentUser.pseudo;
+  const nom = pseudo;
+
+  try {
+    // 1) Vérifier le stock
+    const { data: stockData, error: stockErr } = await supabase
+      .from('stock_drogues')
+      .select('quantite')
+      .eq('type', drogue)
+      .maybeSingle();
+    if (stockErr) throw stockErr;
+    if (!stockData) throw new Error('Type de drogue inconnu dans le stock.');
+    const stockActuel = Number(stockData.quantite);
+    if (stockActuel < quantite) {
+      throw new Error('Stock insuffisant pour ' + drogue + '. Il reste ' + stockActuel + ' pochons.');
+    }
+
+    // 2) Déduire du stock
+    const nouveauStock = stockActuel - quantite;
+    const { error: updStock } = await supabase
+      .from('stock_drogues')
+      .update({ quantite: nouveauStock })
+      .eq('type', drogue);
+    if (updStock) throw updStock;
+
+    // 3) Mettre à jour le membre
+    const { data: memberData, error: memberErr } = await supabase
+      .from('membres')
+      .select('drogue, apayer')
+      .eq('nom', nom)
+      .maybeSingle();
+    if (memberErr) throw memberErr;
+    if (!memberData) throw new Error('Membre introuvable : ' + nom);
+    const nouvelleDrogue = Number(memberData.drogue) + quantite;
+    const nouvelAPayer = Number(memberData.apayer) + montant;
+    const { error: updMember } = await supabase
+      .from('membres')
+      .update({ drogue: nouvelleDrogue, apayer: nouvelAPayer, quota: nouvelAPayer })
+      .eq('nom', nom);
+    if (updMember) throw updMember;
+
+    // 4) Enregistrer la vente
+    const { error: insVente } = await supabase
+      .from('ventes_drogues')
+      .insert([{ type: drogue, quantite: quantite, montant: montant, taux: taux, vendeur: nom, created_at: new Date().toISOString() }]);
+    if (insVente) throw insVente;
+
+    // 5) Historique
+    await supabase
+      .from('historique')
+      .insert([{ action: 'VENTE DE DROGUE', auteur: nom, details: drogue + ' x' + quantite + ' = ' + montant + '$ (taux ' + taux + '%)', created_at: new Date().toISOString() }]);
+
+    resultDiv.innerHTML = '<span style="color:#39FF6A;">✅ Vente déclarée !<br>Drogue : ' + drogue + '<br>Pochons vendus : ' + quantite + '<br>Montant : ' + montant + ' $<br>Taux : ' + taux + '%<br>Stock restant : ' + nouveauStock + ' pochons</span>';
+    submitBtn.disabled = false; submitBtn.textContent = '💾 Valider la vente';
+    chargerStockDrogues();
+    chargerVentesStats();
+    setTimeout(() => {
+      chargerDonnees();
+      fermerModal('ticketModal');
+      updateLastUpdate();
+      toast('📊 Tableaux actualisés avec succès');
+    }, 800);
+  } catch (err) {
+    console.error('Erreur vente:', err);
+    resultDiv.innerHTML = '<span style="color:#FF5C5C;">❌ Erreur : ' + err.message + '</span>';
+    submitBtn.disabled = false; submitBtn.textContent = '💾 Valider la vente';
+  }
+});
+
+// ============================================================
+// STATISTIQUES DES VENTES (50/70/90/99)
+// ============================================================
+async function chargerVentesStats() {
+  try {
+    const { data: ventes, error } = await supabase
+      .from('ventes_drogues')
+      .select('taux, quantite')
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (error) throw error;
+    const container = document.getElementById('tauxChart');
+    if (!container) return;
+    if (!ventes || ventes.length === 0) {
+      container.innerHTML = '<div style="color:#8aa89a;text-align:center;width:100%;">Aucune vente enregistrée.</div>';
+      return;
+    }
+    // Calcul des tranches
+    const tranches = { '50%': 0, '70%': 0, '90%': 0, '99%': 0 };
+    ventes.forEach(v => {
+      const t = Number(v.taux);
+      const q = Number(v.quantite);
+      if (t >= 45 && t <= 54) tranches['50%'] += q;
+      else if (t >= 65 && t <= 74) tranches['70%'] += q;
+      else if (t >= 85 && t <= 94) tranches['90%'] += q;
+      else if (t >= 95) tranches['99%'] += q;
+    });
+    const max = Math.max(1, ...Object.values(tranches));
+    let html = '';
+    const order = ['50%', '70%', '90%', '99%'];
+    order.forEach(key => {
+      const h = Math.max(6, Math.round((tranches[key] / max) * 100));
+      html += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;">
+        <div style="width:100%;max-width:30px;background:#39FF6A;border-radius:4px 4px 0 0;height:${h}px;opacity:0.8;"></div>
+        <div style="font-size:8px;color:#8aa89a;margin-top:2px;">${tranches[key]}</div>
+      </div>`;
+    });
+    container.innerHTML = html;
+
+    // Tableau des dernières ventes
+    const tbody = document.getElementById('ventesTableBody');
+    if (!tbody) return;
+    const { data: lastVentes } = await supabase
+      .from('ventes_drogues')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(10);
+    if (!lastVentes || lastVentes.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8aa89a;">Aucune vente récente.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = lastVentes.map(v => {
+      const date = new Date(v.created_at).toLocaleDateString('fr-FR') + ' ' + new Date(v.created_at).toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+      return `<tr><td>${date}</td><td>${v.vendeur}</td><td>${v.type}</td><td>${v.quantite}</td><td>${Number(v.montant).toLocaleString('fr-FR')} $</td><td style="font-weight:700;color:${v.taux >= 80 ? '#39FF6A' : v.taux >= 50 ? '#FFD86B' : '#FFA53C'};">${v.taux}%</td></tr>`;
+    }).join('');
+  } catch (e) {
+    console.error('Erreur stats ventes:', e);
+  }
+}
+
+// ============================================================
+// VENTES COMPLÈTES (admin)
+// ============================================================
+async function chargerVentesCompletes() {
+  if (!isAdmin()) return;
+  try {
+    const { data, error } = await supabase
+      .from('ventes_drogues')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    const tbody = document.getElementById('ventesCompletesBody');
+    if (!tbody) return;
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8aa89a;">Aucune vente enregistrée.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(v => {
+      const date = new Date(v.created_at).toLocaleString('fr-FR');
+      return `<tr><td>${date}</td><td>${v.vendeur}</td><td>${v.type}</td><td>${v.quantite}</td><td>${Number(v.montant).toLocaleString('fr-FR')} $</td><td style="font-weight:700;color:${v.taux >= 80 ? '#39FF6A' : v.taux >= 50 ? '#FFD86B' : '#FFA53C'};">${v.taux}%</td></tr>`;
+    }).join('');
+  } catch (e) {
+    console.error('Erreur ventes complètes:', e);
+  }
+}
+
+// ============================================================
+// AFFICHAGE DASHBOARD
+// ============================================================
+function afficherDashboard(data) {
+  const membres = data.membres || [];
+  const totalMembres = data.totalMembres || 0;
+  const totalCA = data.totals.totalCA || 0;
+  const stats = [
+    { label: '👥 MEMBRES', number: totalMembres, sub: '+2 ce mois' },
+    { label: '💰 TRÉSORERIE', number: totalCA + ' $', sub: 'Quotas des membres' },
+    { label: '🚗 VÉHICULES', number: allVehicules.length || 0, sub: 'en mission' },
+    { label: '🌿 MISSIONS', number: allMissions.length || 0, sub: 'en cours' }
+  ];
+  document.getElementById('dashStats').innerHTML = stats.map(s =>
+    `<div class="stat-card-dash"><div class="stat-label">${s.label}</div><div class="stat-number">${s.number}</div><div class="stat-sub">${s.sub}</div></div>`
+  ).join('');
+}
+
+// ============================================================
+// TABLEAUX MEMBRES
+// ============================================================
+function getGradeOrder(grade) {
+  const order = { '👑 Boss': 1, '🥈 Bras droit': 2, '🎖️ Haut Grade': 3, '⚔️ Soldat': 4 };
+  return order[grade] || 99;
+}
+
+function afficherTableauxMembres(membres) {
+  if (!membres || membres.length === 0) {
+    document.getElementById('tableBodyAdmin').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;">Aucun membre.</td></tr>';
+    document.getElementById('tableBodyMembres').innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;">Aucun membre.</td></tr>';
+    return;
+  }
+  const sorted = membres.slice().sort((a,b) => getGradeOrder(a.grade) - getGradeOrder(b.grade));
+  const tbodyAdmin = document.getElementById('tableBodyAdmin');
+  let sumDrogue=0, sumLabo=0, sumBraquages=0, sumPrime=0, sumQuota=0, sumPayer=0;
+  tbodyAdmin.innerHTML = sorted.map(m => {
+    sumDrogue += Number(m.drogue);
+    sumLabo += Number(m.branche || 0);
+    sumBraquages += Number(m.braquages);
+    sumPrime += Number(m.prime);
+    sumQuota += Number(m.quota);
+    sumPayer += Number(m.apayer);
+    const status = Math.random() > 0.6 ? '<span class="online-indicator"></span> En ligne' : '<span class="online-indicator offline"></span> Hors ligne';
+    const colorAPayer = (m.apayer < 35000) ? '#FF5C5C' : '#39FF6A';
+    return `<tr><td class="td-left">${m.nom}</td><td>${m.grade}</td><td class="td-right">${Number(m.drogue).toLocaleString('fr-FR')}</td><td class="td-right">${Number(m.branche || 0).toLocaleString('fr-FR')}</td><td class="td-right">${Number(m.braquages).toLocaleString('fr-FR')}</td><td class="td-right">${Number(m.prime).toLocaleString('fr-FR')}</td><td class="td-right" style="color:${colorAPayer};font-weight:700;">${Number(m.quota).toLocaleString('fr-FR')}</td><td class="td-right" style="color:${colorAPayer};font-weight:700;">${Number(m.apayer).toLocaleString('fr-FR')}</td><td class="td-observe">${m.observation||''}</td><td><select onchange="changerStatut('${m.nom}', this.value)" style="background:#0f1d16;border:1px solid #1f5c3a;border-radius:4px;color:#fff;padding:2px 4px;"><option value="Actif" ${m.statut==='Actif'?'selected':''}>Actif</option><option value="Inactif" ${m.statut==='Inactif'?'selected':''}>Inactif</option><option value="Suspendu" ${m.statut==='Suspendu'?'selected':''}>Suspendu</option><option value="VIP" ${m.statut==='VIP'?'selected':''}>VIP</option></select></td><td style="font-size:11px;">${status}</td></tr>`;
+  }).join('');
+  const adminTable = document.getElementById('membresTableAdmin');
+  let oldTfoot = adminTable.querySelector('tfoot');
+  if (oldTfoot) oldTfoot.remove();
+  const tfoot = document.createElement('tfoot');
+  tfoot.style.borderTop = '2px solid #39FF6A';
+  tfoot.style.background = '#132A1E';
+  tfoot.style.fontWeight = '700';
+  tfoot.style.color = '#FFD86B';
+  tfoot.innerHTML = `<tr><td colspan="2" style="text-align:right; padding:8px;">📊 TOTAUX</td><td class="td-right">${sumDrogue.toLocaleString('fr-FR')}</td><td class="td-right">${sumLabo.toLocaleString('fr-FR')}</td><td class="td-right">${sumBraquages.toLocaleString('fr-FR')}</td><td class="td-right">${sumPrime.toLocaleString('fr-FR')}</td><td class="td-right" style="color:#FFD86B;">${sumQuota.toLocaleString('fr-FR')}</td><td class="td-right" style="color:#FFD86B;">${sumPayer.toLocaleString('fr-FR')}</td><td colspan="3"></td></tr>`;
+  adminTable.appendChild(tfoot);
+
+  const tbodyMembres = document.getElementById('tableBodyMembres');
+  const isAdminUser = isAdmin();
+  tbodyMembres.innerHTML = sorted.map(m => {
+    const statusColor = m.statut === 'Actif' || m.statut === 'VIP' ? '#39FF6A' : '#FF5C5C';
+    const status = Math.random() > 0.6 ? '<span class="online-indicator"></span> En ligne' : '<span class="online-indicator offline"></span> Hors ligne';
+    const editBtn = isAdminUser ? `<button class="btn" onclick="ouvrirEditMembre('${m.nom}')">✏️</button>` : '<span style="font-size:10px;color:#555;">🔒</span>';
+    const deleteBtn = isAdminUser ? `<button class="btn btn-danger" onclick="supprimerMembre('${m.nom}')">🗑️</button>` : '<span style="font-size:10px;color:#555;">🔒</span>';
+    return `<tr><td class="td-left">${m.nom}</td><td>${m.grade}</td><td class="td-right">${Number(m.drogue).toLocaleString('fr-FR')}</td><td class="td-right">${Number(m.branche || 0).toLocaleString('fr-FR')}</td><td class="td-right">${Number(m.braquages).toLocaleString('fr-FR')}</td><td class="td-right">${Number(m.prime).toLocaleString('fr-FR')}</td><td class="td-right" style="font-weight:700;">${Number(m.quota).toLocaleString('fr-FR')}</td><td class="td-observe">${m.observation||''}</td><td style="color:${statusColor};font-weight:600;">${m.statut||'Actif'}</td><td style="font-size:11px;">${status}</td><td>${editBtn}</td><td>${deleteBtn}</td></tr>`;
+  }).join('');
+}
+
+// ============================================================
+// AFFICHAGE HIÉRARCHIE
+// ============================================================
+function afficherHierarchie(data) {
+  const h = data.hierarchie;
+  const grid = document.getElementById('hierarchieGrid');
+  const cards = [
+    { label: 'BOSS', value: h.boss, cls: 'gold', cardCls: 'boss', icon: '👑' },
+    { label: 'BRAS DROIT', value: h.brasDroit, cls: 'purple', cardCls: 'bras-droit', icon: '⚜️' },
+    { label: 'HAUT GRADE', value: h.hautGrade, cls: '', cardCls: 'haut-grade', icon: '🎖️' },
+    { label: 'SOLDAT', value: h.soldat, cls: 'orange', cardCls: 'soldat', icon: '⚔️' },
+    { label: 'TOTAL', value: data.totalMembres, cls: '', cardCls: 'total', icon: '👥' }
+  ];
+  grid.innerHTML = cards.map(c => `<div class="hierarchie-card ${c.cardCls}"><div class="card-icon">${c.icon}</div><div class="label">${c.label}</div><div class="value ${c.cls}">${c.value}</div></div>`).join('');
+  const detail = document.getElementById('hierarchieDetail');
+  let html = '<div style="display:flex;flex-wrap:wrap;gap:6px 12px;">';
+  data.membres.forEach(m => {
+    const color = m.grade.includes('Boss') ? '#FFD86B' :
+                  m.grade.includes('Bras droit') ? '#C79CFF' :
+                  m.grade.includes('Haut Grade') ? '#39FF6A' : '#FFA53C';
+    html += `<span style="background:#132A1E;padding:2px 10px;border-radius:12px;border:1px solid #1f5c3a;border-left:3px solid ${color};">${m.nom}</span>`;
+  });
+  html += '</div>';
+  detail.innerHTML = html;
+}
+
+// ============================================================
+// TOP 5
+// ============================================================
+function afficherTop5(membres) {
+  const sorted = membres.slice().sort((a,b) => b.quota - a.quota);
+  const top5 = sorted.slice(0,5);
+  const container = document.getElementById('topMembersList');
+  container.innerHTML = top5.map((m, idx) => {
+    const rank = idx===0?'🥇':idx===1?'🥈':idx===2?'🥉':'#'+(idx+1);
+    return `<div class="top-member-item"><span><span class="rank">${rank}</span> <span class="name">${m.nom}</span></span><span class="value">${Number(m.quota).toLocaleString('fr-FR')} $</span></div>`;
+  }).join('');
+}
+
+// ============================================================
+// STATUTS SUMMARY
+// ============================================================
+function chargerStatutsSummary(membres) {
+  const stats = {};
+  membres.forEach(m => { const s = m.statut || 'Actif'; stats[s] = (stats[s]||0)+1; });
+  let html = '';
+  for (const key in stats) {
+    html += `<span style="display:inline-block;background:#132A1E;padding:2px 12px;border-radius:12px;margin:3px;border:1px solid #1f5c3a;">${key} : ${stats[key]}</span>`;
+  }
+  document.getElementById('statutsSummary').innerHTML = html || 'Aucun membre';
+}
+
+// ============================================================
+// COFFRE
+// ============================================================
+function chargerCoffre() {
+  const total = allMembres.reduce((sum, m) => sum + Number(m.quota || 0), 0);
+  document.getElementById('coffreDisplay').textContent = total.toLocaleString('fr-FR') + ' $';
+}
+function ouvrirModalModifCoffre() { if(!isAdmin()) return; document.getElementById('modifCoffreModal').classList.add('active'); }
+document.getElementById('modifCoffreForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if(!isAdmin()) return;
+  const val = parseInt(document.getElementById('coffreNewMontant').value);
+  if(isNaN(val)) return alert('Veuillez entrer un nombre valide.');
+  try {
+    const { error } = await supabase
+      .from('coffre')
+      .upsert({ id: 1, montant: val, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+    if (error) throw error;
+    alert('Coffre mis à jour.');
+    fermerModal('modifCoffreModal');
+    chargerCoffre();
+  } catch (err) {
+    alert('Erreur : ' + err.message);
+  }
+});
+
+// ============================================================
+// OBJECTIFS
+// ============================================================
+async function chargerObjectifs() {
+  try {
+    const { data, error } = await supabase
+      .from('objectifs')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    let total = 0; let html = '';
+    data.forEach(o => {
+      total += o.valeur;
+      html += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #14251c;padding:2px 0;"><span style="color:#8aa89a;">${o.description||'Objectif'}</span><span style="color:#FFD86B;">${Number(o.valeur).toLocaleString('fr-FR')} $</span></div>`;
+    });
+    document.getElementById('objectifTotalDisplay').textContent = Number(total).toLocaleString('fr-FR') + ' $';
+    document.getElementById('objectifsList').innerHTML = html || 'Aucun objectif';
+    if(isAdmin()) {
+      const adminList = document.getElementById('objectifsAdminList');
+      if(!data || data.length === 0) {
+        adminList.innerHTML = '<div style="color:#8aa89a;text-align:center;padding:10px;">Aucun objectif créé.</div>';
+        return;
+      }
+      adminList.innerHTML = data.map(o => {
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #14251c;"><span style="color:#fff;">${o.description}</span><div><span style="color:#FFD86B;margin-right:10px;">${Number(o.valeur).toLocaleString('fr-FR')} $</span><button class="btn btn-danger" onclick="supprimerObjectif(${o.id})" style="font-size:10px;padding:2px 6px;">🗑️</button></div></div>`;
+      }).join('');
+    }
+  } catch (e) {
+    console.error('Erreur objectifs:', e);
+  }
+}
+function ouvrirModalObjectifs() { if(!isAdmin()) return; document.getElementById('objectifsModal').classList.add('active'); chargerObjectifs(); }
+document.getElementById('ajoutObjectifForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if(!isAdmin()) return;
+  const desc = document.getElementById('objDesc').value.trim();
+  const val = parseInt(document.getElementById('objValeur').value);
+  if(!desc || isNaN(val)) return alert('Veuillez remplir les champs.');
+  try {
+    await supabase.from('objectifs').insert([{ description: desc, valeur: val, created_at: new Date().toISOString() }]);
+    chargerObjectifs();
+  } catch (err) { alert('Erreur : ' + err.message); }
+});
+async function supprimerObjectif(id) {
+  if(!isAdmin() || !confirm('🗑️ Supprimer cet objectif ?')) return;
+  try {
+    await supabase.from('objectifs').delete().eq('id', id);
+    chargerObjectifs();
+  } catch (err) { alert('Erreur : ' + err.message); }
+}
+
+// ============================================================
+// REVENUS (simulé)
+// ============================================================
+function chargerRevenus() {}
+
+// ============================================================
+// MISSIONS
+// ============================================================
+async function chargerMissions() {
+  try {
+    const { data, error } = await supabase
+      .from('missions')
+      .select('*')
+      .order('id', { ascending: true });
+    if (error) throw error;
+    allMissions = data || [];
+    const grid = document.getElementById('missionsGrid');
+    if (!data || data.length === 0) {
+      grid.innerHTML = '<div style="text-align:center;color:#8aa89a;padding:40px;">Aucune mission.</div>';
+      return;
+    }
+    grid.innerHTML = data.map((ms, idx) => {
+      let badgeText = 'STANDARD', badgeClass = 'low';
+      const quotaNum = parseFloat(String(ms.quota).replace(/[^0-9.-]+/g,'')) || 0;
+      if (quotaNum > 100000) { badgeText = '🔥 HIGH PRIORITY'; badgeClass = 'high'; }
+      else if (quotaNum > 50000) { badgeText = '⚡ MEDIUM RISK'; badgeClass = 'medium'; }
+      return `<div class="mission-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;"><div class="mission-title">${ms.titre||'MISSION '+(idx+1)}</div><span class="mission-badge ${badgeClass}">${badgeText}</span></div><div class="mission-detail-row"><span class="label">📍 OBJECTIF</span><span class="value">${ms.detail1||'—'}</span></div><div class="mission-detail-row"><span class="label">📊 RÉCOMPENSE</span><span class="value highlight">${ms.quota||'—'}</span></div><div class="mission-detail-row"><span class="label">📌 DÉTAIL</span><span class="value">${ms.detail2||'—'}</span></div></div>`;
+    }).join('');
+    const preview = document.getElementById('missionsDashPreview');
+    if(data && data.length > 0) {
+      preview.innerHTML = data.slice(0,2).map(ms => `<div style="padding:4px 0;border-bottom:1px solid #14251c;">• <strong>${ms.titre}</strong> <span style="color:#FFD86B;">${ms.quota}</span></div>`).join('');
+      if(data.length > 2) preview.innerHTML += `<div style="padding:4px 0;color:#8aa89a;">Et ${data.length-2} autres...</div>`;
+    } else {
+      preview.innerHTML = 'Aucune mission active.';
+    }
+    if (isAdmin()) {
+      const container = document.getElementById('missionsEditContainer');
+      container.innerHTML = data.map((ms, idx) => {
+        const num = idx+1;
+        return `<div style="border-bottom:1px solid #1f5c3a;padding-bottom:12px;margin-bottom:12px;"><div style="color:#39FF6A;font-weight:700;margin-bottom:6px;">Mission ${num}</div><div class="modal-field"><label>Titre</label><input type="text" id="mission${num}_titre" value="${ms.titre||''}"></div><div class="modal-field"><label>Détail 1</label><input type="text" id="mission${num}_detail1" value="${ms.detail1||''}"></div><div class="modal-field"><label>Détail 2</label><input type="text" id="mission${num}_detail2" value="${ms.detail2||''}"></div><div class="modal-field"><label>Quota</label><input type="text" id="mission${num}_quota" value="${ms.quota||''}"></div><div class="modal-field"><label>Image URL</label><input type="text" id="mission${num}_image" value="${ms.imageURL||''}"></div></div>`;
+      }).join('');
+    }
+  } catch (e) {
+    console.error('Erreur missions:', e);
+  }
+}
+async function chargerEtatMissions() {
+  try {
+    const { data, error } = await supabase
+      .from('configuration')
+      .select('valeur')
+      .eq('propriete', 'MissionsActive')
+      .maybeSingle();
+    if (error) throw error;
+    missionsActive = data ? data.valeur === true : true;
+    const btn = document.getElementById('toggleMissionBtn');
+    if(btn) {
+      btn.textContent = missionsActive ? '🌿 Actif' : '🚫 Inactif';
+      btn.style.borderColor = missionsActive ? '#39FF6A55' : '#FF5C5C55';
+    }
+    const grid = document.getElementById('missionsGrid');
+    if(grid) grid.style.display = missionsActive ? 'grid' : 'none';
+  } catch (e) {
+    console.error('Erreur état missions:', e);
+  }
+}
+async function toggleMissions() {
+  if(!isAdmin()) return;
+  const newState = !missionsActive;
+  try {
+    await supabase
+      .from('configuration')
+      .upsert({ propriete: 'MissionsActive', valeur: newState }, { onConflict: 'propriete' });
+    chargerEtatMissions();
+    toast("Missions " + (newState ? "activées" : "désactivées") + " !");
+  } catch (err) { alert('Erreur : ' + err.message); }
+}
+document.getElementById('missionsForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!isAdmin()) return;
+  const missions = [];
+  const count = document.querySelectorAll('#missionsEditContainer > div').length;
+  for (let i=1; i<=count; i++) {
+    const titre = document.getElementById('mission'+i+'_titre').value.trim();
+    const detail1 = document.getElementById('mission'+i+'_detail1').value.trim();
+    const detail2 = document.getElementById('mission'+i+'_detail2').value.trim();
+    const quota = document.getElementById('mission'+i+'_quota').value.trim();
+    const imageURL = document.getElementById('mission'+i+'_image').value.trim();
+    missions.push({ titre, detail1, detail2, quota, imageURL });
+  }
+  try {
+    // Supprimer toutes les missions et les réinsérer
+    await supabase.from('missions').delete().neq('id', 0); // astuce pour tout supprimer
+    for (const m of missions) {
+      await supabase.from('missions').insert([m]);
+    }
+    alert('Missions sauvegardées.');
+    chargerMissions();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+});
+
+// ============================================================
+// VÉHICULES
+// ============================================================
+async function chargerVehicules() {
+  try {
+    const { data, error } = await supabase
+      .from('vehicules')
+      .select('*');
+    if (error) throw error;
+    allVehicules = data || [];
+    const tbody = document.getElementById('vehiculesBody');
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;">Aucun véhicule.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(veh => {
+      const imgHtml = veh.imageURL ? `<img src="${veh.imageURL}" class="vehicule-image">` : '📷';
+      const actions = isAdmin() ? `<td><button class="btn" onclick="ouvrirEditVehicule('${veh.nom}')">✏️</button></td><td><button class="btn btn-danger" onclick="supprimerVehicule('${veh.nom}')">🗑️</button></td>` : '<td colspan="2" style="font-size:10px;color:#8aa89a;">🔒</td>';
+      return `<tr><td>${imgHtml}</td><td class="td-left">${veh.nom}</td><td class="td-right">${Number(veh.coffre).toLocaleString('fr-FR')} KG</td><td>${veh.utilisation||'—'}</td><td>${veh.plaque||'—'}</td>${actions}</tr>`;
+    }).join('');
+  } catch (e) {
+    console.error('Erreur véhicules:', e);
+  }
+}
+function ouvrirAjoutVehicule() { if (!isAdmin()) return; document.getElementById('vehiculeModalTitle').textContent = '➕ Ajouter un véhicule'; document.getElementById('vehiculeAncienNom').value = ''; document.getElementById('vehiculeNom').value = ''; document.getElementById('vehiculeCoffre').value = ''; document.getElementById('vehiculeUtilisation').value = ''; document.getElementById('vehiculePlaque').value = ''; document.getElementById('vehiculeImage').value = ''; document.getElementById('vehiculeModal').classList.add('active'); }
+function ouvrirEditVehicule(nom) {
+  if (!isAdmin()) return;
+  const v = allVehicules.find(x => x.nom === nom);
+  if (!v) return alert('Véhicule introuvable.');
+  document.getElementById('vehiculeModalTitle').textContent = '✏️ Modifier '+nom;
+  document.getElementById('vehiculeAncienNom').value = nom;
+  document.getElementById('vehiculeNom').value = v.nom;
+  document.getElementById('vehiculeCoffre').value = v.coffre;
+  document.getElementById('vehiculeUtilisation').value = v.utilisation || '';
+  document.getElementById('vehiculePlaque').value = v.plaque || '';
+  document.getElementById('vehiculeImage').value = v.imageURL || '';
+  document.getElementById('vehiculeModal').classList.add('active');
+}
+document.getElementById('vehiculeForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!isAdmin()) return;
+  const ancien = document.getElementById('vehiculeAncienNom').value;
+  const nom = document.getElementById('vehiculeNom').value.trim();
+  const coffre = parseInt(document.getElementById('vehiculeCoffre').value) || 0;
+  const utilisation = document.getElementById('vehiculeUtilisation').value.trim();
+  const plaque = document.getElementById('vehiculePlaque').value.trim();
+  const image = document.getElementById('vehiculeImage').value.trim();
+  if (!nom) return alert('Nom requis.');
+  try {
+    if (ancien) {
+      await supabase
+        .from('vehicules')
+        .update({ nom, coffre, utilisation, plaque, imageURL: image })
+        .eq('nom', ancien);
+    } else {
+      await supabase
+        .from('vehicules')
+        .insert([{ nom, coffre, utilisation, plaque, imageURL: image }]);
+    }
+    alert('Véhicule enregistré.');
+    fermerModal('vehiculeModal');
+    chargerVehicules();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+});
+async function supprimerVehicule(nom) {
+  if (!isAdmin() || !confirm('Supprimer le véhicule "'+nom+'" ?')) return;
+  try {
+    await supabase.from('vehicules').delete().eq('nom', nom);
+    alert('Supprimé.');
+    chargerVehicules();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+}
+
+// ============================================================
+// RDV
+// ============================================================
+async function chargerRdv() {
+  try {
+    const { data, error } = await supabase
+      .from('rdv')
+      .select('*')
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    const rdv = data || {};
+    const container = document.getElementById('nextOperation');
+    container.innerHTML = `<div class="op-title">🤝 ${rdv.titre||'RÉUNION GROUPE'}</div><div class="op-desc">${rdv.desc||'Point stratégique'}</div><div class="op-meta"><span>📌 LIEU : <span class="value">${rdv.lieu||'Sandy Shores'}</span></span><span>⏰ DÉPART : <span class="value">${rdv.depart||'Aujourd\'hui - 21:00'}</span></span></div>`;
+    if (isAdmin()) {
+      document.getElementById('rdvTitre').value = rdv.titre || '';
+      document.getElementById('rdvDesc').value = rdv.desc || '';
+      document.getElementById('rdvRecompense').value = rdv.recompense || '';
+      document.getElementById('rdvDepart').value = rdv.depart || '';
+      document.getElementById('rdvLieu').value = rdv.lieu || '';
+    }
+  } catch (e) {
+    console.error('Erreur rdv:', e);
+  }
+}
+document.getElementById('rdvForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!isAdmin()) return;
+  const titre = document.getElementById('rdvTitre').value.trim();
+  const desc = document.getElementById('rdvDesc').value.trim();
+  const recompense = document.getElementById('rdvRecompense').value.trim();
+  const depart = document.getElementById('rdvDepart').value.trim();
+  const lieu = document.getElementById('rdvLieu').value.trim();
+  try {
+    // Supprimer l'ancien et insérer le nouveau
+    await supabase.from('rdv').delete().neq('id', 0);
+    await supabase.from('rdv').insert([{ titre, desc, recompense, depart, lieu }]);
+    alert('RDV mis à jour.');
+    chargerRdv();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+});
+
+// ============================================================
+// CONTACTS
+// ============================================================
+async function chargerContacts() {
+  const filter = document.getElementById('contactFilter') ? document.getElementById('contactFilter').value : 'all';
+  try {
+    let query = supabase.from('contacts').select('*');
+    if (filter !== 'all') query = query.eq('type', filter);
+    const { data, error } = await query;
+    if (error) throw error;
+    allContacts = data || [];
+    const grid = document.getElementById('contactsGrid');
+    if (!data || data.length === 0) {
+      grid.innerHTML = '<div style="text-align:center;color:#8aa89a;padding:40px;">Aucun contact.</div>';
+      return;
+    }
+    grid.innerHTML = data.map(c => {
+      const actions = isAdmin() ? `
+        <div class="contact-actions">
+          <button class="btn" onclick="ouvrirEditContact('${c.nom}')">✏️</button>
+          <button class="btn btn-danger" onclick="supprimerContact('${c.nom}')">🗑️</button>
+        </div>` : '';
+      return `<div class="contact-card">
+        <span class="contact-type">${c.type||'Membre'}</span>
+        <div class="contact-name">${c.nom}</div>
+        <div class="contact-detail"><span class="icon">📞</span><span class="value">${c.numero||'—'}</span></div>
+        <div class="contact-detail"><span class="icon">💬</span><span class="value">${c.discord||'—'}</span></div>
+        ${actions}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    console.error('Erreur contacts:', e);
+  }
+}
+function ouvrirModalAjoutContact() { if (!isAdmin()) return; document.getElementById('contactModalTitle').textContent = '➕ Ajouter un contact'; document.getElementById('contactAncienNom').value = ''; document.getElementById('contactNom').value = ''; document.getElementById('contactType').value = '👑 Boss'; document.getElementById('contactNumero').value = ''; document.getElementById('contactDiscord').value = ''; document.getElementById('contactModal').classList.add('active'); }
+function ouvrirEditContact(nom) {
+  if (!isAdmin()) return;
+  const c = allContacts.find(x => x.nom === nom);
+  if (!c) return alert('Contact introuvable.');
+  document.getElementById('contactModalTitle').textContent = '✏️ Modifier '+nom;
+  document.getElementById('contactAncienNom').value = nom;
+  document.getElementById('contactNom').value = c.nom;
+  document.getElementById('contactType').value = c.type || '👑 Boss';
+  document.getElementById('contactNumero').value = c.numero || '';
+  document.getElementById('contactDiscord').value = c.discord || '';
+  document.getElementById('contactModal').classList.add('active');
+}
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!isAdmin()) return;
+  const ancien = document.getElementById('contactAncienNom').value;
+  const nom = document.getElementById('contactNom').value.trim();
+  const type = document.getElementById('contactType').value;
+  const numero = document.getElementById('contactNumero').value.trim();
+  const discord = document.getElementById('contactDiscord').value.trim();
+  if (!nom) return alert('Nom requis.');
+  try {
+    if (ancien) {
+      await supabase
+        .from('contacts')
+        .update({ nom, type, numero, discord })
+        .eq('nom', ancien);
+    } else {
+      await supabase
+        .from('contacts')
+        .insert([{ nom, type, numero, discord }]);
+    }
+    alert('Contact enregistré.');
+    fermerModal('contactModal');
+    chargerContacts();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+});
+async function supprimerContact(nom) {
+  if (!isAdmin() || !confirm('Supprimer le contact "'+nom+'" ?')) return;
+  try {
+    await supabase.from('contacts').delete().eq('nom', nom);
+    alert('Supprimé.');
+    chargerContacts();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+}
+
+// ============================================================
+// DROGUES
+// ============================================================
+async function chargerDrogues() {
+  try {
+    const { data, error } = await supabase
+      .from('drogues')
+      .select('*');
+    if (error) throw error;
+    allDrogues = data || [];
+    const grid = document.getElementById('droguesGrid');
+    if (!data || data.length === 0) {
+      grid.innerHTML = '<div style="text-align:center;color:#8aa89a;padding:40px;">Aucune drogue.</div>';
+      return;
+    }
+    grid.innerHTML = data.map(d => {
+      const benefice = d.prixRevente - d.prixAchat;
+      return `<div class="drogue-card"><div class="drogue-titre">${d.titre}</div><div class="drogue-lieu">📍 ${d.lieu||'—'}</div><div class="drogue-prix"><span class="label">💰 Achat</span><span class="value">${Number(d.prixAchat).toLocaleString('fr-FR')} $</span></div><div class="drogue-prix"><span class="label">📈 Revente</span><span class="value">${Number(d.prixRevente).toLocaleString('fr-FR')} $</span></div><div class="drogue-prix"><span class="label">📊 Bénéfice</span><span class="value" style="color:${benefice>0?'#39FF6A':'#FF5C5C'};">${benefice>0?'+':''}${Number(benefice).toLocaleString('fr-FR')} $</span></div></div>`;
+    }).join('');
+    if (isAdmin()) chargerDroguesAdmin(data);
+    mettreAJourPrixParTaux(data);
+    chargerVentesStats();
+  } catch (e) {
+    console.error('Erreur drogues:', e);
+  }
+}
+function chargerDroguesAdmin(drogues) {
+  const grid = document.getElementById('droguesAdminGrid');
+  if (!grid) return;
+  if (!drogues || drogues.length === 0) {
+    grid.innerHTML = '<div style="color:#8aa89a;text-align:center;padding:40px;">Aucune drogue.</div>';
+    return;
+  }
+  grid.innerHTML = drogues.map(d => {
+    const benefice = d.prixRevente - d.prixAchat;
+    return `<div class="drogue-card"><div class="drogue-titre">${d.titre}</div><div class="drogue-lieu">📍 ${d.lieu||'—'}</div><div class="drogue-prix"><span class="label">💰 Achat</span><span class="value">${Number(d.prixAchat).toLocaleString('fr-FR')} $</span></div><div class="drogue-prix"><span class="label">📈 Revente</span><span class="value">${Number(d.prixRevente).toLocaleString('fr-FR')} $</span></div><div class="drogue-prix"><span class="label">📊 Bénéfice</span><span class="value" style="color:${benefice>0?'#39FF6A':'#FF5C5C'};">${benefice>0?'+':''}${Number(benefice).toLocaleString('fr-FR')} $</span></div><div class="contact-actions"><button class="btn" onclick="ouvrirEditDrogue('${d.titre}')">✏️</button><button class="btn btn-danger" onclick="supprimerDrogue('${d.titre}')">🗑️</button></div></div>`;
+  }).join('');
+}
+function mettreAJourPrixParTaux(drogues) {
+  if (!drogues || drogues.length === 0) return;
+  const prixBase = Number(drogues[0].prixRevente) || 0;
+  const coefficients = { '50%': 1.5, '70%': 1.8, '90%': 2.2, '99%': 2.5 };
+  document.getElementById('prix50').textContent = Math.round(prixBase * coefficients['50%']).toLocaleString('fr-FR') + ' $';
+  document.getElementById('prix70').textContent = Math.round(prixBase * coefficients['70%']).toLocaleString('fr-FR') + ' $';
+  document.getElementById('prix90').textContent = Math.round(prixBase * coefficients['90%']).toLocaleString('fr-FR') + ' $';
+  document.getElementById('prix99').textContent = Math.round(prixBase * coefficients['99%']).toLocaleString('fr-FR') + ' $';
+}
+function ouvrirModalAjoutDrogue() { if (!isAdmin()) return; document.getElementById('drogueModalTitle').textContent = '➕ Ajouter une drogue'; document.getElementById('drogueForm').reset(); document.getElementById('drogueAncienTitre').value = ''; document.getElementById('drogueModal').classList.add('active'); }
+function ouvrirEditDrogue(titre) {
+  if (!isAdmin()) return;
+  const d = allDrogues.find(x => x.titre === titre);
+  if (!d) return alert('Drogue introuvable.');
+  document.getElementById('drogueModalTitle').textContent = '✏️ Modifier '+titre;
+  document.getElementById('drogueAncienTitre').value = titre;
+  document.getElementById('drogueTitre').value = d.titre;
+  document.getElementById('droguePrixAchat').value = d.prixAchat;
+  document.getElementById('droguePrixRevente').value = d.prixRevente;
+  document.getElementById('drogueLieu').value = d.lieu || '';
+  document.getElementById('drogueModal').classList.add('active');
+}
+document.getElementById('drogueForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!isAdmin()) return;
+  const ancienTitre = document.getElementById('drogueAncienTitre').value;
+  const titre = document.getElementById('drogueTitre').value.trim();
+  const prixAchat = parseInt(document.getElementById('droguePrixAchat').value) || 0;
+  const prixRevente = parseInt(document.getElementById('droguePrixRevente').value) || 0;
+  const lieu = document.getElementById('drogueLieu').value.trim();
+  if (!titre) { alert('Veuillez entrer un titre.'); return; }
+  if (prixAchat < 0 || prixRevente < 0) { alert('Les prix doivent être positifs.'); return; }
+  try {
+    if (ancienTitre) {
+      await supabase
+        .from('drogues')
+        .update({ titre, prixAchat, prixRevente, lieu })
+        .eq('titre', ancienTitre);
+    } else {
+      await supabase
+        .from('drogues')
+        .insert([{ titre, prixAchat, prixRevente, lieu }]);
+    }
+    alert('Drogue enregistrée.');
+    fermerModal('drogueModal');
+    chargerDrogues();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+});
+async function supprimerDrogue(titre) {
+  if (!isAdmin() || !confirm('🗑️ Supprimer la drogue "'+titre+'" ?')) return;
+  try {
+    await supabase.from('drogues').delete().eq('titre', titre);
+    alert('Supprimée.');
+    chargerDrogues();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+}
+
+// ============================================================
+// POINTS GPS
+// ============================================================
+async function chargerPoints() {
+  try {
+    const { data, error } = await supabase
+      .from('points')
+      .select('*');
+    if (error) throw error;
+    allPoints = data || [];
+    afficherPointsCarte(data);
+    if (isAdmin()) {
+      const container = document.getElementById('pointsListContainer');
+      if (!container) return;
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div style="color:#8aa89a;text-align:center;padding:20px;">Aucun point enregistré.</div>';
+        return;
+      }
+      container.innerHTML = data.map(p => {
+        return `<div class="point-item"><div><strong>${p.nom}</strong> <span class="coords">(${p.x}%, ${p.y}%)${p.description ? ' - '+p.description : ''}</span></div><div class="actions"><button class="btn" onclick="ouvrirEditPoint('${p.nom}')">✏️</button><button class="btn btn-danger" onclick="supprimerPoint('${p.nom}')">🗑️</button></div></div>`;
+      }).join('');
+    }
+  } catch (e) {
+    console.error('Erreur points:', e);
+  }
+}
+function afficherPointsCarte(points) {
+  const mapContainer = document.getElementById('mapContainer');
+  if (!mapContainer) return;
+  mapContainer.querySelectorAll('.map-point').forEach(el => el.remove());
+  if (!points || points.length === 0) return;
+  points.forEach(p => {
+    const point = document.createElement('div');
+    point.className = 'map-point';
+    point.style.left = p.x + '%';
+    point.style.top = p.y + '%';
+    point.innerHTML = `<span class="tooltip">${p.nom}${p.description ? ' - '+p.description : ''}</span>`;
+    mapContainer.appendChild(point);
+  });
+}
+document.getElementById('clickableMapImg').addEventListener('click', function(e) {
+  const rect = this.getBoundingClientRect();
+  let x = ((e.clientX - rect.left) / rect.width) * 100;
+  let y = ((e.clientY - rect.top) / rect.height) * 100;
+  x = Math.min(100, Math.max(0, x));
+  y = Math.min(100, Math.max(0, y));
+  document.getElementById('addPointX').value = Math.round(x);
+  document.getElementById('addPointY').value = Math.round(y);
+  document.getElementById('clickCoordsDisplay').innerHTML = 'X: <strong>'+Math.round(x)+'%</strong>, Y: <strong>'+Math.round(y)+'%</strong>';
+  const marker = document.getElementById('mapMarker');
+  marker.style.display = 'block';
+  marker.style.left = Math.round(x) + '%';
+  marker.style.top = Math.round(y) + '%';
+});
+document.getElementById('addPointForm').addEventListener('reset', function(e) {
+  document.getElementById('addPointX').value = '';
+  document.getElementById('addPointY').value = '';
+  document.getElementById('clickCoordsDisplay').innerHTML = 'Aucun point sélectionné';
+  document.getElementById('mapMarker').style.display = 'none';
+});
+document.getElementById('addPointForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!isAdmin()) return;
+  const nom = document.getElementById('addPointNom').value.trim();
+  const desc = document.getElementById('addPointDesc').value.trim();
+  const x = parseInt(document.getElementById('addPointX').value);
+  const y = parseInt(document.getElementById('addPointY').value);
+  if (!nom) { alert('Veuillez entrer un nom.'); return; }
+  if (isNaN(x) || isNaN(y)) { alert('Veuillez cliquer sur la carte pour définir la position.'); return; }
+  try {
+    await supabase.from('points').insert([{ nom, x, y, description: desc }]);
+    alert('Point ajouté.');
+    document.getElementById('addPointForm').reset();
+    document.getElementById('mapMarker').style.display = 'none';
+    document.getElementById('clickCoordsDisplay').innerHTML = 'Aucun point sélectionné';
+    chargerPoints();
+  } catch (err) { alert('Erreur : ' + err.message); }
+});
+function ouvrirEditPoint(nom) {
+  if (!isAdmin()) return;
+  const p = allPoints.find(x => x.nom === nom);
+  if (!p) return alert('Point introuvable.');
+  const newNom = prompt('Nouveau nom :', p.nom);
+  if (newNom === null) return;
+  const newX = prompt('Nouvelle coordonnée X (0-100) :', p.x);
+  if (newX === null) return;
+  const newY = prompt('Nouvelle coordonnée Y (0-100) :', p.y);
+  if (newY === null) return;
+  const newDesc = prompt('Nouvelle description :', p.description || '');
+  if (newDesc === null) return;
+  (async () => {
+    try {
+      await supabase
+        .from('points')
+        .update({ nom: newNom, x: parseInt(newX), y: parseInt(newY), description: newDesc })
+        .eq('nom', nom);
+      alert('Point modifié.');
+      chargerPoints();
+    } catch (err) { alert('Erreur : ' + err.message); }
+  })();
+}
+async function supprimerPoint(nom) {
+  if (!isAdmin() || !confirm('🗑️ Supprimer le point "'+nom+'" ?')) return;
+  try {
+    await supabase.from('points').delete().eq('nom', nom);
+    alert('Supprimé.');
+    chargerPoints();
+  } catch (err) { alert('Erreur : ' + err.message); }
+}
+
+// ============================================================
+// CHAT (utilisation de la table messages)
+// ============================================================
+function initChat(pseudo, role) {
+  if (chatInitialized) return;
+  const messagesContainer = document.getElementById('chatMessages');
+  const input = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('chatSendBtn');
+  if (!messagesContainer || !input || !sendBtn) return;
+  input.disabled = false; sendBtn.disabled = false;
+  input.placeholder = 'Écris ton message...';
+  messagesContainer.innerHTML = '<div style="text-align:center;color:#555;font-size:13px;margin:auto;">Chargement...</div>';
+  async function loadMessages() {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .order('created_at', { ascending: true })
+      .limit(100);
+    if (error) { console.error('Erreur chargement:', error); messagesContainer.innerHTML = '<div style="color:#FF5C5C;text-align:center;">Erreur de chargement.</div>'; return; }
+    messagesContainer.innerHTML = '';
+    data.forEach(msg => appendMessage(msg));
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+  async function checkAndResetChat() {
+    const lastReset = localStorage.getItem('chatLastReset');
+    const now = Date.now();
+    if (!lastReset || (now - parseInt(lastReset)) > 24 * 60 * 60 * 1000) {
+      const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000).toISOString();
+      await supabase.from('messages').delete().lt('created_at', oneDayAgo);
+      localStorage.setItem('chatLastReset', now.toString());
+      console.log('✅ Chat reset automatique effectué (24h).');
+    }
+  }
+  function appendMessage(msg) {
+    const isSelf = msg.user_name === pseudo;
+    const div = document.createElement('div');
+    div.className = 'message' + (isSelf ? ' self' : '');
+    const adminClass = msg.user_role === 'admin' ? 'admin' : '';
+    div.innerHTML = `<div class="msg-header"><span class="name ${adminClass}">${msg.user_name}</span><span>${new Date(msg.created_at).toLocaleTimeString('fr-FR')}</span></div><div class="msg-content">${msg.content}</div>`;
+    messagesContainer.appendChild(div);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+  async function sendMessage() {
+    const content = input.value.trim();
+    if (!content) return;
+    input.value = ''; input.disabled = true; sendBtn.disabled = true;
+    const { error } = await supabase
+      .from('messages')
+      .insert([{ user_name: pseudo, user_role: role || 'membre', content, created_at: new Date().toISOString() }]);
+    if (error) { console.error('Erreur envoi:', error); alert('Erreur lors de l\'envoi du message.'); }
+    input.disabled = false; sendBtn.disabled = false; input.focus();
+  }
+  // Écouter les nouveaux messages en temps réel via Supabase Realtime
+  supabase.channel('public:messages')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+      appendMessage(payload.new);
+    })
+    .subscribe();
+  sendBtn.addEventListener('click', sendMessage);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+  checkAndResetChat();
+  loadMessages();
+  chatInitialized = true;
+}
+function ouvrirChat() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const chatPage = document.getElementById('page-chat');
+  if (chatPage) chatPage.classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.chat-widget').forEach(w => w.classList.add('active'));
+  if (currentUser) {
+    const pseudo = currentUser.pseudo;
+    if (pseudo && !chatInitialized) {
+      initChat(pseudo, currentUser.role || 'membre');
+    }
+  }
+}
+
+// ============================================================
+// LABO & VENTE BRANCHE
+// ============================================================
+function ouvrirLabo() {
+  if (!currentUser) { alert('Connecte-toi d\'abord !'); return; }
+  document.getElementById('laboBranches').value = 0;
+  document.getElementById('laboGraines').value = 0;
+  document.getElementById('laboResult').innerHTML = '';
+  document.getElementById('laboModal').classList.add('active');
+}
+document.getElementById('laboForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!currentUser) return;
+  const branches = parseInt(document.getElementById('laboBranches').value) || 0;
+  const graines = parseInt(document.getElementById('laboGraines').value) || 0;
+  const resultDiv = document.getElementById('laboResult');
+  if (branches < 0 || graines < 0) { resultDiv.innerHTML = '<span style="color:#FF5C5C;">❌ Les valeurs doivent être positives.</span>'; return; }
+  if (branches === 0 && graines === 0) { resultDiv.innerHTML = '<span style="color:#FF5C5C;">❌ Entre au moins une valeur.</span>'; return; }
+  const submitBtn = this.querySelector('button[type="submit"]');
+  submitBtn.disabled = true; submitBtn.textContent = '⏳ Envoi...';
+  resultDiv.innerHTML = '<span style="color:#7CFFA0;">⏳ Envoi en cours...</span>';
+  const pseudo = currentUser.pseudo;
+  const nom = pseudo;
+
+  try {
+    // Récupérer le membre
+    const { data: memberData, error: memberErr } = await supabase
+      .from('membres')
+      .select('branche')
+      .eq('nom', nom)
+      .maybeSingle();
+    if (memberErr) throw memberErr;
+    if (!memberData) throw new Error('Membre introuvable.');
+    const nouvelleValeur = Number(memberData.branche) + branches;
+    const { error: upd } = await supabase
+      .from('membres')
+      .update({ branche: nouvelleValeur })
+      .eq('nom', nom);
+    if (upd) throw upd;
+    await supabase
+      .from('historique')
+      .insert([{ action: 'DÉCLARATION LABO', auteur: nom, details: branches + ' branches récoltées', created_at: new Date().toISOString() }]);
+    resultDiv.innerHTML = '<span style="color:#39FF6A;">✅ Déclaration labo enregistrée !<br>Branches récoltées : ' + branches + ' 🌿<br>Total branches en stock : ' + nouvelleValeur + ' 🌿</span>';
+    submitBtn.disabled = false; submitBtn.textContent = '💾 Valider la déclaration';
+    setTimeout(() => { chargerDonnees(); fermerModal('laboModal'); updateLastUpdate(); }, 2000);
+  } catch (err) {
+    resultDiv.innerHTML = '<span style="color:#FF5C5C;">❌ Erreur : ' + err.message + '</span>';
+    submitBtn.disabled = false; submitBtn.textContent = '💾 Valider la déclaration';
+  }
+});
+
+function ouvrirVenteBranche() {
+  if (!currentUser) { alert('Connecte-toi d\'abord !'); return; }
+  document.getElementById('venteBrancheQuantite').value = 1;
+  document.getElementById('venteBrancheMontant').value = 0;
+  document.getElementById('venteBrancheResult').innerHTML = '';
+  document.getElementById('venteBrancheModal').classList.add('active');
+}
+document.getElementById('venteBrancheForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!currentUser) { alert('Connecte-toi d\'abord !'); return; }
+  const quantite = parseInt(document.getElementById('venteBrancheQuantite').value) || 0;
+  const montant = parseInt(document.getElementById('venteBrancheMontant').value) || 0;
+  const resultDiv = document.getElementById('venteBrancheResult');
+  if (quantite <= 0) { resultDiv.innerHTML = '<span style="color:#FF5C5C;">❌ Entrez une quantité valide.</span>'; return; }
+  if (montant <= 0) { resultDiv.innerHTML = '<span style="color:#FF5C5C;">❌ Entrez un montant valide.</span>'; return; }
+  const submitBtn = this.querySelector('button[type="submit"]');
+  submitBtn.disabled = true; submitBtn.textContent = '⏳ Envoi...';
+  resultDiv.innerHTML = '<span style="color:#7CFFA0;">⏳ Envoi en cours...</span>';
+  const pseudo = currentUser.pseudo;
+  const nom = pseudo;
+
+  try {
+    const { data: memberData, error: memberErr } = await supabase
+      .from('membres')
+      .select('apayer')
+      .eq('nom', nom)
+      .maybeSingle();
+    if (memberErr) throw memberErr;
+    if (!memberData) throw new Error('Membre introuvable.');
+    const nouvelAPayer = Number(memberData.apayer) + montant;
+    const { error: upd } = await supabase
+      .from('membres')
+      .update({ apayer: nouvelAPayer, quota: nouvelAPayer })
+      .eq('nom', nom);
+    if (upd) throw upd;
+    await supabase
+      .from('historique')
+      .insert([{ action: 'VENTE DE BRANCHES', auteur: nom, details: quantite + ' branches vendues = ' + montant + '$', created_at: new Date().toISOString() }]);
+    resultDiv.innerHTML = '<span style="color:#39FF6A;">✅ Vente de branches enregistrée !<br>Branches vendues : ' + quantite + ' 🌿<br>Montant : ' + montant + ' $<br>Total APayer : ' + nouvelAPayer + ' $</span>';
+    submitBtn.disabled = false; submitBtn.textContent = '💾 Valider la vente';
+    setTimeout(() => { chargerDonnees(); fermerModal('venteBrancheModal'); updateLastUpdate(); }, 2000);
+  } catch (err) {
+    resultDiv.innerHTML = '<span style="color:#FF5C5C;">❌ Erreur : ' + err.message + '</span>';
+    submitBtn.disabled = false; submitBtn.textContent = '💾 Valider la vente';
+  }
+});
+
+// ============================================================
+// NAVIGATION TABS
+// ============================================================
+document.querySelectorAll('.tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    const page = this.dataset.page;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('.chat-widget').forEach(w => w.classList.remove('active'));
+    if (page === 'chat' && currentUser) {
+      const pseudo = currentUser.pseudo;
+      if (pseudo && !chatInitialized) {
+        initChat(pseudo, currentUser.role || 'membre');
+      }
+    }
+    if (page === 'loc') chargerLoc();
+  });
+});
+document.querySelectorAll('.admin-dropdown .dropdown-content a').forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    const page = this.dataset.page;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active');
+    if (page === 'points') chargerPoints();
+    if (page === 'missions') chargerMissions();
+    if (page === 'rdv') chargerRdv();
+    if (page === 'drogues') chargerDrogues();
+    if (page === 'contacts') chargerContacts();
+    if (page === 'vehicules') chargerVehicules();
+    if (page === 'historique') chargerHistorique();
+    if (page === 'semaines') chargerSemaines();
+    if (page === 'braquage') chargerFormulaireBraquage();
+    if (page === 'ventes') chargerVentesCompletes();
+    if (page === 'loc') chargerLoc();
+  });
+});
+
+// ============================================================
+// GESTION MEMBRES (Admin)
+// ============================================================
+function ouvrirEditMembre(nom) {
+  if (!isAdmin()) return;
+  const m = allMembres.find(x => x.nom === nom);
+  if (!m) return alert('Membre introuvable.');
+  document.getElementById('modalNomDisplay').textContent = nom;
+  document.getElementById('editAncienNom').value = nom;
+  document.getElementById('editNom').value = m.nom;
+  document.getElementById('editGrade').value = m.grade;
+  document.getElementById('editDrogue').value = m.drogue;
+  document.getElementById('editBranche').value = m.branche || 0;
+  document.getElementById('editBraquages').value = m.braquages;
+  document.getElementById('editPrime').value = m.prime;
+  document.getElementById('editQuota').value = m.quota;
+  document.getElementById('editPayer').value = m.apayer;
+  document.getElementById('editObs').value = m.observation;
+  document.getElementById('editStatut').value = m.statut || 'Actif';
+  document.getElementById('editModal').classList.add('active');
+}
+document.getElementById('editForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!isAdmin()) return;
+  const ancien = document.getElementById('editAncienNom').value;
+  const nom = document.getElementById('editNom').value.trim();
+  const grade = document.getElementById('editGrade').value;
+  const drogue = parseInt(document.getElementById('editDrogue').value) || 0;
+  const branche = parseInt(document.getElementById('editBranche').value) || 0;
+  const braq = parseInt(document.getElementById('editBraquages').value) || 0;
+  const prime = parseInt(document.getElementById('editPrime').value) || 0;
+  const quota = parseInt(document.getElementById('editQuota').value) || 0;
+  const payer = parseInt(document.getElementById('editPayer').value) || 0;
+  const obs = document.getElementById('editObs').value;
+  const statut = document.getElementById('editStatut').value;
+  try {
+    await supabase
+      .from('membres')
+      .update({ nom, grade, drogue, branche, braquages: braq, prime, quota, apayer: payer, observation: obs, statut })
+      .eq('nom', ancien);
+    alert('Membre modifié.');
+    fermerModal('editModal');
+    chargerDonnees();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+});
+async function supprimerMembre(nom) {
+  if (!isAdmin() || !confirm('🗑️ Supprimer '+nom+' ?')) return;
+  try {
+    await supabase.from('membres').delete().eq('nom', nom);
+    alert('Supprimé.');
+    chargerDonnees();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+}
+async function changerStatut(nom, statut) {
+  if (!isAdmin()) return;
+  try {
+    await supabase.from('membres').update({ statut }).eq('nom', nom);
+    chargerDonnees();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+}
+function enregistrerQuotasEtRafraichir() {
+  if (!isAdmin() || !confirm('📝 Enregistrer les quotas ?')) return;
+  // Enregistrer une ligne dans weekly_stats
+  (async () => {
+    const now = new Date();
+    const weekNumber = getWeekNumber(now);
+    const year = now.getFullYear();
+    try {
+      const { data: stats } = await supabase
+        .from('membres')
+        .select('quota');
+      const totalQuota = stats.reduce((sum, m) => sum + Number(m.quota || 0), 0);
+      await supabase
+        .from('weekly_stats')
+        .insert([{ week_number: weekNumber, year: year, total_membres: stats.length, total_quota: totalQuota, created_at: now.toISOString() }]);
+      alert('Quotas enregistrés.');
+      chargerDonnees();
+      updateLastUpdate();
+    } catch (err) { alert('Erreur : ' + err.message); }
+  })();
+}
+function resetMembresStats() {
+  if (!isAdmin()) return;
+  if (!confirm('⚠️ Réinitialiser toutes les statistiques de tous les membres ?')) return;
+  document.getElementById('loadingOverlay').classList.add('active');
+  document.querySelector('#loadingOverlay .status').textContent = 'Réinitialisation en cours...';
+  document.querySelector('#loadingOverlay .welcome').innerHTML = '';
+  (async () => {
+    try {
+      // Mettre à jour tous les membres avec des valeurs à zéro
+      const { error } = await supabase
+        .from('membres')
+        .update({ drogue: 0, branche: 0, braquages: 0, prime: 0, quota: 0, apayer: 0 });
+      if (error) throw error;
+      document.getElementById('loadingOverlay').classList.remove('active');
+      alert('✅ Tous les membres ont été réinitialisés.');
+      chargerDonnees();
+      updateLastUpdate();
+    } catch (err) {
+      document.getElementById('loadingOverlay').classList.remove('active');
+      alert('⚠️ Erreur : ' + err.message);
+    }
+  })();
+}
+function resetStatuts() {
+  if (!isAdmin() || !confirm('⚠️ Réinitialiser les statuts ?')) return;
+  (async () => {
+    try {
+      await supabase.from('membres').update({ statut: 'Actif' });
+      alert('Statuts réinitialisés.');
+      chargerDonnees();
+      updateLastUpdate();
+    } catch (err) { alert('Erreur : ' + err.message); }
+  })();
+}
+document.getElementById('ajoutMembreForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!isAdmin()) return;
+  const nom = document.getElementById('ajoutNom').value.trim();
+  const grade = document.getElementById('ajoutGrade').value;
+  const drogue = parseInt(document.getElementById('ajoutDrogue').value) || 0;
+  const branche = parseInt(document.getElementById('ajoutBranche').value) || 0;
+  const braq = parseInt(document.getElementById('ajoutBraquages').value) || 0;
+  const prime = parseInt(document.getElementById('ajoutPrime').value) || 0;
+  const quota = parseInt(document.getElementById('ajoutQuota').value) || 0;
+  const payer = parseInt(document.getElementById('ajoutPayer').value) || 0;
+  const obs = document.getElementById('ajoutObs').value;
+  const statut = document.getElementById('ajoutStatut').value;
+  const pseudo = document.getElementById('ajoutPseudo').value.trim();
+  const mdp = document.getElementById('ajoutMdp').value.trim();
+  const role = document.getElementById('ajoutRole').value;
+  if (!nom || !pseudo || !mdp) { alert('Veuillez remplir au moins le nom, le pseudo et le mot de passe.'); return; }
+  try {
+    // Ajouter le membre
+    await supabase
+      .from('membres')
+      .insert([{ nom, grade, drogue, branche, braquages: braq, prime, quota, apayer: payer, observation: obs, statut }]);
+    // Ajouter l'utilisateur
+    await supabase
+      .from('utilisateurs')
+      .insert([{ pseudo, motdepasse: mdp, role, derniere_connexion: new Date().toISOString() }]);
+    alert('✅ Membre et utilisateur ajoutés.');
+    document.getElementById('ajoutMembreForm').reset();
+    chargerDonnees();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+});
+function resetForm(formId) { const form = document.getElementById(formId); if (form) form.reset(); }
+
+// ============================================================
+// HISTORIQUE, SEMAINES, DÉPENSES
+// ============================================================
+async function chargerHistorique() {
+  if(!isAdmin()) return;
+  try {
+    const { data, error } = await supabase
+      .from('historique')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    const tbody = document.getElementById('historiqueBody');
+    if(!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#8aa89a;">Aucune transaction enregistrée.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(h => {
+      return `<tr><td>${new Date(h.created_at).toLocaleString('fr-FR')}</td><td style="color:#FFD86B;">${h.action}</td><td>${h.auteur}</td><td>${h.details}</td></tr>`;
+    }).join('');
+  } catch (e) { console.error('Erreur historique:', e); }
+}
+async function chargerSemaines() {
+  if(!isAdmin()) return;
+  try {
+    const { data, error } = await supabase
+      .from('weekly_stats')
+      .select('*')
+      .order('year', { ascending: false })
+      .order('week_number', { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    const tbody = document.getElementById('semainesBody');
+    if(!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#8aa89a;">Aucune semaine enregistrée.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(s => {
+      return `<tr><td style="font-weight:700;color:#FFD86B;">Semaine ${s.week_number}</td><td>${s.year}</td><td>${s.total_membres}</td><td style="color:#39FF6A;">${Number(s.total_quota).toLocaleString('fr-FR')} $</td><td>${new Date(s.created_at).toLocaleString('fr-FR')}</td></tr>`;
+    }).join('');
+  } catch (e) { console.error('Erreur semaines:', e); }
+}
+function ouvrirModalAjoutDepense() {
+  if(!isAdmin()) return;
+  document.getElementById('depenseDesc').value = '';
+  document.getElementById('depenseMontant').value = '';
+  document.getElementById('ajoutDepenseModal').classList.add('active');
+}
+document.getElementById('ajoutDepenseForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if(!isAdmin()) return;
+  const desc = document.getElementById('depenseDesc').value.trim();
+  const montant = parseInt(document.getElementById('depenseMontant').value);
+  if(!desc || isNaN(montant)) return alert('Veuillez remplir tous les champs.');
+  try {
+    await supabase
+      .from('depenses')
+      .insert([{ description: desc, montant: montant, created_at: new Date().toISOString() }]);
+    fermerModal('ajoutDepenseModal');
+    chargerDepenses();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+});
+async function chargerDepenses() {
+  try {
+    const { data, error } = await supabase
+      .from('depenses')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    const container = document.getElementById('depensesList');
+    if(!data || data.length === 0) {
+      container.innerHTML = '<div style="color:#8aa89a;text-align:center;padding:15px;">Aucune dépense enregistrée.</div>';
+      return;
+    }
+    container.innerHTML = data.map(d => {
+      const date = d.created_at ? new Date(d.created_at).toLocaleDateString('fr-FR') : 'Hier';
+      const isAdminUser = currentUser && currentUser.role === 'admin';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid #14251c;background:rgba(255,255,255,0.02);border-radius:6px;margin-bottom:4px;"><span style="display:flex;gap:8px;align-items:center;"><span style="color:#8aa89a;font-size:11px;">${date}</span> ${d.description}</span><div><span style="color:#FF5C5C;font-weight:700;margin-right:10px;">- ${Number(d.montant).toLocaleString('fr-FR')} $</span>${isAdminUser ? `<button class="btn btn-danger" onclick="supprimerDepense(${d.id})" style="font-size:10px;padding:2px 6px;">🗑️</button>` : ''}</div></div>`;
+    }).join('');
+  } catch (e) { console.error('Erreur dépenses:', e); }
+}
+async function supprimerDepense(id) {
+  if(!isAdmin() || !confirm('Supprimer cette dépense ?')) return;
+  try {
+    await supabase.from('depenses').delete().eq('id', id);
+    chargerDepenses();
+    updateLastUpdate();
+  } catch (err) { alert('Erreur : ' + err.message); }
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+document.getElementById('adminNotifBtn').addEventListener('click', function(e){
+  e.preventDefault();
+  if(!isAdmin()) return;
+  document.getElementById('notifMessage').value = '';
+  document.getElementById('notifDuree').value = 6;
+  document.getElementById('notifModal').classList.add('active');
+});
+document.getElementById('notifForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  if(!isAdmin()) return;
+  const msg = document.getElementById('notifMessage').value.trim();
+  const duree = parseInt(document.getElementById('notifDuree').value) || 6;
+  if(!msg) return alert('Veuillez écrire un message.');
+  const btn = this.querySelector('button[type="submit"]');
+  btn.disabled = true; btn.textContent = '⏳ Envoi...';
+  try {
+    await supabase.from('notifications').insert([{ message: msg, created_at: new Date().toISOString() }]);
+    document.getElementById('notifModal').classList.remove('active');
+    alert('✅ Notification envoyée à tous les membres.');
+    btn.disabled = false; btn.textContent = '📨 Envoyer à tous';
+  } catch (err) {
+    alert('Erreur : '+err.message);
+    btn.disabled = false; btn.textContent = '📨 Envoyer à tous';
+  }
+});
+setInterval(async function(){
+  if(currentUser) {
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('message')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (error) throw error;
+      if (data && data.length > 0 && data[0].message) {
+        const toast = document.getElementById('bossToast');
+        document.getElementById('bossToastMsg').textContent = data[0].message;
+        toast.style.transform = 'translateX(0)';
+        await supabase.from('notifications').delete().neq('id', 0); // Supprimer après affichage
+        clearTimeout(window.bossToastTimeout);
+        window.bossToastTimeout = setTimeout(function(){ toast.style.transform = 'translateX(-150%)'; }, 6000);
+      }
+    } catch (e) { /* ignoré */ }
+  }
+}, 15000);
+
+// ============================================================
+// WEBHOOKS
+// ============================================================
+function lancerWebhooks() {
+  if (webhookInterval) clearInterval(webhookInterval);
+  webhookInterval = setInterval(async function() {
+    if (!currentUser) return;
+    try {
+      const { data } = await supabase.from('stock').select('nom, quantite');
+      const el = document.getElementById('webhook-produits');
+      if (el) {
+        if (!data || data.length === 0) {
+          el.innerHTML = '<div style="color:#8aa89a;">Aucun produit en stock.</div>';
+        } else {
+          el.innerHTML = data.map(p => `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #14251c;padding:4px 0;"><span>${p.nom}</span><span style="color:#39FF6A;">${p.quantite}</span></div>`).join('');
+        }
+      }
+    } catch (e) { /* ignoré */ }
+    chargerDernierBraquage();
+  }, 5000);
+}
+
+// ============================================================
+// CALCULATEUR
+// ============================================================
+document.getElementById('calcInput').addEventListener('input', calculerPourcentage);
+document.getElementById('calcMode').addEventListener('change', calculerPourcentage);
+function calculerPourcentage() {
+  const val = parseFloat(document.getElementById('calcInput').value) || 0;
+  const mode = document.getElementById('calcMode').checked;
+  const resultat = mode ? val * 1.3 : val * 0.7;
+  document.getElementById('calcResult').textContent = Math.round(resultat).toLocaleString('fr-FR') + ' $';
+}
+calculerPourcentage();
+
+// ============================================================
+// FERMETURE MODALS
+// ============================================================
+function fermerModal(id) { document.getElementById(id).classList.remove('active'); }
+document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+  overlay.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+});
+function toast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastPseudo').textContent = 'SYSTÈME';
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 4000);
+}
+
+// ============================================================
+// BRAQUAGES
+// ============================================================
+async function chargerFormulaireBraquage() {
+  if (!isAdmin()) return;
+  const container = document.getElementById('braquageParticipants');
+  if (!container) return;
+  try {
+    const { data, error } = await supabase
+      .from('membres')
+      .select('nom, grade');
+    if (error) throw error;
+    let html = '<h4 style="color:#7CFFA0;">Sélectionnez les membres présents et leur versement</h4>';
+    data.forEach(m => {
+      html += '<div style="display:flex;align-items:center;gap:10px;margin:5px 0;">';
+      html += '<input type="checkbox" id="braq_'+m.nom+'" value="'+m.nom+'">';
+      html += '<label for="braq_'+m.nom+'" style="flex:1;">'+m.nom+'</label>';
+      html += '<input type="number" id="versement_'+m.nom+'" placeholder="Versement" value="0" style="width:120px;background:#0f1d16;border:1px solid #1f5c3a;border-radius:6px;padding:4px 8px;color:#fff;">';
+      html += '</div>';
+    });
+    container.innerHTML = html;
+  } catch (e) { console.error('Erreur formulaire braquage:', e); }
+}
+document.getElementById('braquageForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!isAdmin()) return;
+  const nom = document.getElementById('braquageNom').value.trim();
+  const montantTotal = parseInt(document.getElementById('braquageMontant').value) || 0;
+  if (!nom || montantTotal <= 0) {
+    alert('Veuillez remplir tous les champs.');
+    return;
+  }
+  const participations = [];
+  document.querySelectorAll('#braquageParticipants input[type="checkbox"]:checked').forEach(cb => {
+    const membreNom = cb.value;
+    const versement = parseInt(document.getElementById('versement_'+membreNom).value) || 0;
+    participations.push({ nom: membreNom, versement: versement });
+  });
+  if (participations.length === 0) {
+    alert('Sélectionnez au moins un membre.');
+    return;
+  }
+  try {
+    await supabase
+      .from('braquages')
+      .insert([{ nom, montant_total: montantTotal, participants: participations, created_at: new Date().toISOString() }]);
+    await supabase
+      .from('historique')
+      .insert([{ action: 'BRAQUAGE', auteur: 'Admin', details: nom + ' - ' + montantTotal + '$', created_at: new Date().toISOString() }]);
+    alert('Braquage enregistré.');
+    document.getElementById('braquageForm').reset();
+    chargerFormulaireBraquage();
+    chargerDernierBraquage();
+  } catch (err) { alert('Erreur: '+err.message); }
+});
+async function chargerDernierBraquage() {
+  try {
+    const { data, error } = await supabase
+      .from('braquages')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    if (error) throw error;
+    const container = document.getElementById('dernierBraquageContenu');
+    if (!container) return;
+    if (!data || data.length === 0) {
+      container.innerHTML = '<span style="color:#8aa89a;">Aucun braquage enregistré.</span>';
+      return;
+    }
+    const d = data[0];
+    let html = '<div><strong style="color:#FFD86B;">'+d.nom+'</strong> - Montant total: <strong style="color:#39FF6A;">'+Number(d.montant_total).toLocaleString('fr-FR')+' $</strong></div>';
+    html += '<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;">';
+    d.participants.forEach(p => {
+      html += '<span style="background:#132A1E;padding:2px 10px;border-radius:12px;border:1px solid #1f5c3a;">'+p.nom+' : <span style="color:#FFD86B;">'+Number(p.versement).toLocaleString('fr-FR')+' $</span></span>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  } catch (e) { console.error('Erreur dernier braquage:', e); }
+}
+async function resetBraquages() {
+  if (!currentUser || currentUser.role !== 'admin') {
+    alert('⛔ Accès réservé aux administrateurs.');
+    return;
+  }
+  if (!confirm('⚠️ Voulez-vous vraiment supprimer TOUS les braquages enregistrés ? Cette action est irréversible.')) return;
+  const overlay = document.getElementById('loadingOverlay');
+  const status = overlay.querySelector('.status');
+  const welcome = overlay.querySelector('.welcome');
+  status.textContent = 'Suppression des braquages en cours...';
+  welcome.innerHTML = '⏳ Veuillez patienter';
+  overlay.classList.add('active');
+  try {
+    await supabase.from('braquages').delete().neq('id', 0);
+    overlay.classList.remove('active');
+    status.textContent = 'Connexion au serveur...';
+    welcome.innerHTML = 'Bienvenue <span id="loadingPseudo">...</span>';
+    toast('✅ Tous les braquages ont été supprimés.');
+    chargerDernierBraquage();
+  } catch (err) {
+    overlay.classList.remove('active');
+    status.textContent = 'Connexion au serveur...';
+    welcome.innerHTML = 'Bienvenue <span id="loadingPseudo">...</span>';
+    toast('❌ Erreur : ' + err.message);
+  }
+}
+
+// ============================================================
+// TOGGLE GUIDE
+// ============================================================
+function toggleGuide() {
+  const guide = document.getElementById('guideSection');
+  if (guide) {
+    guide.style.display = guide.style.display === 'none' ? 'block' : 'none';
+  }
+}
+
+// ============================================================
+// LOC
+// ============================================================
+const locCategories = [
+  { id: 'drogue',    label: '💊 Stock Drogue',          image: 'https://i.imgur.com/iL4uRPg_d.png?maxwidth=520&shape=thumb&fidelity=high' },
+  { id: 'matiere',   label: '🌾 Matière première',       image: 'https://i.imgur.com/RzvKwSW_d.png?maxwidth=520&shape=thumb&fidelity=high' },
+  { id: 'branches',  label: '🌿 Stock Branches',         image: 'https://i.imgur.com/IoU4MAf_d.png?maxwidth=520&shape=thumb&fidelity=high' },
+  { id: 'labo',      label: '🧪 Labo Branche',           image: 'https://i.imgur.com/mLbdQeZ_d.png?maxwidth=520&shape=thumb&fidelity=high' },
+  { id: 'ventes',    label: '📍 Point de ventes',        image: 'https://i.imgur.com/KndqNWL_d.png?maxwidth=520&shape=thumb&fidelity=high' },
+  { id: 'mexicana70',label: '🌵 Table Mexicana',         image: 'https://i.imgur.com/OlpZuVW_d.png?maxwidth=520&shape=thumb&fidelity=high' },
+  { id: 'fertilisant',label: '🧪 Fertilisant',          image: 'https://i.imgur.com/Pk18O4q_d.png?maxwidth=520&shape=thumb&fidelity=high' }
+];
+async function chargerLoc() {
+  const container = document.getElementById('locButtonsContainer');
+  if (!container) return;
+  try {
+    const { data: produits } = await supabase
+      .from('stock')
+      .select('nom, quantite');
+    let totalDrogue = 0, totalBranche = 0, totalGraine = 0;
+    produits.forEach(p => {
+      const nom = p.nom.toLowerCase();
+      if (nom.includes('drogue')) totalDrogue += Number(p.quantite);
+      if (nom.includes('branche')) totalBranche += Number(p.quantite);
+      if (nom.includes('graine')) totalGraine += Number(p.quantite);
+    });
+    const { data: membres } = await supabase.from('membres').select('quota');
+    const totalCA = membres.reduce((s, m) => s + Number(m.quota || 0), 0);
+    // On peut utiliser ces données pour afficher des infos, mais on ne modifie pas l'affichage
+    genererBoutonsLoc();
+  } catch (e) { console.error('Erreur loc:', e); }
+}
+function genererBoutonsLoc() {
+  const container = document.getElementById('locButtonsContainer');
+  if (!container) return;
+  container.innerHTML = locCategories.map(cat => {
+    return `
+      <button class="btn-loc" data-id="${cat.id}">
+        <img src="${cat.image}" alt="${cat.label}">
+        <div class="loc-label">${cat.label}</div>
+      </button>
+    `;
+  }).join('');
+  container.querySelectorAll('.btn-loc').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const id = this.dataset.id;
+      afficherImageLoc(id);
+    });
+  });
+}
+function afficherImageLoc(categoryId) {
+  const cat = locCategories.find(c => c.id === categoryId);
+  if (!cat) return;
+  const placeholder = document.getElementById('locImagePlaceholder');
+  const loader = document.getElementById('locImageLoader');
+  const img = document.getElementById('locImageDisplay');
+  placeholder.style.display = 'none';
+  loader.style.display = 'block';
+  img.style.display = 'none';
+  const imgUrl = cat.image;
+  const tempImg = new Image();
+  tempImg.onload = function() {
+    loader.style.display = 'none';
+    img.src = imgUrl;
+    img.style.display = 'block';
+  };
+  tempImg.onerror = function() {
+    loader.style.display = 'none';
+    img.style.display = 'none';
+    placeholder.style.display = 'block';
+    placeholder.textContent = '❌ Image introuvable pour ' + cat.label;
+  };
+  tempImg.src = imgUrl;
+}
+
+// ============================================================
+// RESET UTILISATEURS (sauf Hichem)
+// ============================================================
+function resetUtilisateurs() {
+  if (!isAdmin()) return;
+  if (!confirm('⚠️ Voulez-vous vraiment supprimer TOUS les utilisateurs sauf l\'admin "Hichem" ? Cette action est irréversible.')) return;
+  const overlay = document.getElementById('loadingOverlay');
+  const status = overlay.querySelector('.status');
+  const welcome = overlay.querySelector('.welcome');
+  status.textContent = 'Suppression des utilisateurs en cours...';
+  welcome.innerHTML = '⏳ Veuillez patienter';
+  overlay.classList.add('active');
+  let timeoutId = setTimeout(function() {
+    overlay.classList.remove('active');
+    status.textContent = 'Connexion au serveur...';
+    welcome.innerHTML = 'Bienvenue <span id="loadingPseudo">...</span>';
+    toast('❌ Le serveur ne répond pas. Vérifiez votre connexion ou réessayez.');
+  }, 10000);
+  (async () => {
+    try {
+      await supabase
+        .from('utilisateurs')
+        .delete()
+        .neq('pseudo', 'Hichem');
+      clearTimeout(timeoutId);
+      overlay.classList.remove('active');
+      status.textContent = 'Connexion au serveur...';
+      welcome.innerHTML = 'Bienvenue <span id="loadingPseudo">...</span>';
+      toast('✅ Tous les utilisateurs sauf Hichem ont été supprimés.');
+    } catch (err) {
+      clearTimeout(timeoutId);
+      overlay.classList.remove('active');
+      status.textContent = 'Connexion au serveur...';
+      welcome.innerHTML = 'Bienvenue <span id="loadingPseudo">...</span>';
+      toast('❌ Erreur : ' + err.message);
+    }
+  })();
+}
+
+// ============================================================
+// INITIALISATION FINALE
+// ============================================================
+console.log('✅ Secteur 47 chargé avec toutes les modifications (version web autonome).');
+</script>
+</body>
+</html>
